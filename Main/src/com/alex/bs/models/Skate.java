@@ -13,10 +13,9 @@
  ******************************************************************************/
 package com.alex.bs.models;
 
-import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.physics.box2d.joints.*;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 
 public class Skate extends SimpleActor {
     private Body leftWheelBody, rightWheelBody;
@@ -35,7 +34,6 @@ public class Skate extends SimpleActor {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = polygonShape;
         fixtureDef.density = 1;
-        fixtureDef.friction = 10.4f;
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;

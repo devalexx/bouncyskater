@@ -30,7 +30,6 @@ public class Ground extends SimpleActor {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = polygonShape;
         fixtureDef.density = 1;
-        fixtureDef.friction = 10.4f;
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;

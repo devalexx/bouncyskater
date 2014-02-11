@@ -15,9 +15,10 @@ package com.alex.bs.models;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 
 public class Player extends SimpleActor {
+    private Fixture playerPhysicsFixture, playerSensorFixture;
+
     public Player() {
         //sprite = TextureManager.getInstance().getSpriteFromDefaultAtlas("cloud");
         type = TYPE.PLAYER;
@@ -26,28 +27,33 @@ public class Player extends SimpleActor {
 
     @Override
     public void createPhysicsActor(World physicsWorld) {
-        /*PolygonShape polygonShape = new PolygonShape();
-        polygonShape.setAsBox(getPhysicsWidth() / 2, getPhysicsHeight() / 2);*/
-        CircleShape polygonShape = new CircleShape();
-        polygonShape.setRadius(getPhysicsHeight() / 2);
+        BodyDef def = new BodyDef();
+        def.type = BodyDef.BodyType.DynamicBody;
+        body = physicsWorld.createBody(def);
 
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = polygonShape;
-        fixtureDef.density = 0.5f;
-        fixtureDef.friction = 10.4f;
+        PolygonShape poly = new PolygonShape();
+        poly.setAsBox(getPhysicsWidth() / 2, getPhysicsHeight() / 2);
+        playerPhysicsFixture = body.createFixture(poly, 1);
+        poly.dispose();
 
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        body = physicsWorld.createBody(bodyDef);
-        body.createFixture(fixtureDef);
-        //body.resetMassData();
+        CircleShape circle = new CircleShape();
+        circle.setRadius(getPhysicsWidth() / 2);
+        circle.setPosition(new Vector2(0, -getPhysicsHeight() / 2));
+        playerSensorFixture = body.createFixture(circle, 0);
+        playerSensorFixture.setFriction(100);
+        circle.dispose();
 
-        polygonShape.dispose();
+        body.setBullet(true);
+        body.setFixedRotation(true);
 
         super.createPhysicsActor(physicsWorld);
     }
 
     public void roll(float force) {
         body.applyTorque(force, true);
+    }
+
+    public Fixture getPlayerSensorFixture() {
+        return playerSensorFixture;
     }
 }

@@ -13,14 +13,22 @@
  ******************************************************************************/
 package com.alex.bs.stages;
 
-import com.alex.bs.models.*;
+import com.alex.bs.models.Ground;
+import com.alex.bs.models.Player;
+import com.alex.bs.models.SimpleActor;
+import com.alex.bs.models.Skate;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.Joint;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.WorldManifold;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
-import com.badlogic.gdx.scenes.scene2d.*;
-
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
+import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.Array;
 
 public class GameStage extends Stage {
     public static final float WORLD_TO_BOX = 0.01f;
@@ -30,6 +38,8 @@ public class GameStage extends Stage {
     private Player player;
     private Action leftAction, rightAction;
     private Joint joint;
+    private float MAX_VELOCITY = 100;
+    private boolean canJump;
 
     public GameStage(float width, float height) {
         super(width, height, true);
@@ -52,7 +62,7 @@ public class GameStage extends Stage {
         addActor(ground);
 
         player = new Player();
-        player.setPosition(new Vector2(0, 50));
+        player.setPosition(new Vector2(100, 50));
         addActor(player);
 
         RevoluteJointDef jointDef = new RevoluteJointDef();
@@ -78,69 +88,77 @@ public class GameStage extends Stage {
 
         physicsWorld.step(1 / 60f, 8, 3);
 
-        if(joint != null && joint.getReactionForce(1 / 60f).len() > 0.004) {
+        if(joint != null &&
+                (joint.getReactionForce(1 / 60f).len() > 0.003 ||
+                        skate.getRotation() < -60 ||
+                        skate.getRotation() > 60)) {
             physicsWorld.destroyJoint(joint);
             joint = null;
         }
+
+        if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            if(joint != null) {
+                if(skate.getLinearVelocity().x > -MAX_VELOCITY * 3)
+                    skate.applyForceToCenter(-2, 0, true);
+            } else if(player.getLinearVelocity().x > -MAX_VELOCITY)
+                player.applyForceToCenter(-2, 0, true);
+        } else if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            if(joint != null) {
+                if(skate.getLinearVelocity().x < MAX_VELOCITY * 3)
+                    skate.applyForceToCenter(1, 0, true);
+            } else if(player.getLinearVelocity().x < MAX_VELOCITY)
+                player.applyForceToCenter(2, 0, true);
+            float a = player.getBody().getFixtureList().get(0).getFriction();
+        }
+
+        canJump = isPlayerGrounded();
     }
 
     @Override
     public boolean keyDown(int keyCode) {
         switch(keyCode) {
-            case Input.Keys.LEFT:
-                leftAction = forever(
-                    run(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(joint != null)
-                                skate.roll(0.04f);
-                            else
-                                player.roll(0.2f);
-                        }
-                    })
-                );
-                addAction(leftAction);
-                break;
-            case Input.Keys.RIGHT:
-                rightAction = forever(
-                    run(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(joint != null)
-                                skate.roll(-0.04f);
-                            else
-                                player.roll(-0.2f);
-                        }
-                    })
-                );
-                addAction(rightAction);
-                break;
             case Input.Keys.SPACE:
                 if(joint == null) {
-                    player.setPosition(skate.getPosition().cpy().add(0, 50));
+                    player.setPosition(skate.getPosition().cpy().add(0, player.getHeight() / 1.3f));
                     RevoluteJointDef jointDef = new RevoluteJointDef();
                     jointDef.initialize(player.getBody(), skate.getBody(), player.getBody().getWorldCenter());
                     joint = physicsWorld.createJoint(jointDef);
+                } else {
+                    physicsWorld.destroyJoint(joint);
+                    joint = null;
                 }
+                break;
+            case Input.Keys.UP:
+                if(canJump)
+                    player.applyForceToCenter(new Vector2(0, 30));
                 break;
         }
 
         return super.keyDown(keyCode);
     }
 
-    @Override
-    public boolean keyUp(int keyCode) {
-        switch(keyCode) {
-            case Input.Keys.LEFT:
-                getRoot().removeAction(leftAction);
-                leftAction = null;
-                break;
-            case Input.Keys.RIGHT:
-                getRoot().removeAction(rightAction);
-                rightAction = null;
-                break;
-        }
+    private boolean isPlayerGrounded() {
+        Array<Contact> contactList = physicsWorld.getContactList();
+        for(int i = 0; i < contactList.size; i++) {
+            Contact contact = contactList.get(i);
 
-        return super.keyUp(keyCode);
+            if(contact.isTouching() && (contact.getFixtureA() == player.getPlayerSensorFixture() ||
+                    contact.getFixtureB() == player.getPlayerSensorFixture())) {
+                Vector2 pos = player.getPosition();
+                WorldManifold manifold = contact.getWorldManifold();
+                boolean below = true;
+                for(int j = 0; j < manifold.getNumberOfContactPoints(); j++) {
+                    below &= (manifold.getPoints()[j].y < pos.y - 0.4f);
+                }
+
+                if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT) && below)
+                    contact.setFriction(100F);
+                else
+                    contact.setFriction(0F);
+
+                return below;
+            }
+        }
+        return false;
     }
 }
