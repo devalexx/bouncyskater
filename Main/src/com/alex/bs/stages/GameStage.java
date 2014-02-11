@@ -84,6 +84,9 @@ public class GameStage extends Stage {
 
     @Override
     public void act(float delta) {
+        getCamera().position.set(player.getPosition().x, player.getPosition().y, 0f);
+        getCamera().update();
+        getSpriteBatch().setProjectionMatrix(getCamera().projection);
         super.act(delta);
 
         physicsWorld.step(1 / 60f, 8, 3);
