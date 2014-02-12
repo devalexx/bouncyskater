@@ -1,0 +1,26 @@
+
+pack.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+player
+  rotate: false
+  xy: 2, 68
+  size: 96, 256
+  orig: 96, 256
+  offset: 0, 0
+  index: -1
+skate
+  rotate: false
+  xy: 100, 260
+  size: 256, 64
+  orig: 256, 64
+  offset: 0, 0
+  index: -1
+wheel
+  rotate: false
+  xy: 2, 2
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1

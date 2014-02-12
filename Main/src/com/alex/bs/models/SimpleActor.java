@@ -40,7 +40,7 @@ public abstract class SimpleActor extends Actor {
         NONE,
         GROUND,
         SKATE,
-        PLAYER;
+        PLAYER
     }
 
     public void createPhysicsActor(World physicsWorld) {

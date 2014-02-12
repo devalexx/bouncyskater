@@ -25,10 +25,10 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 public class BSGame extends Game {
     @Override
     public void create() {
-        //TextureManager.getInstance().getAtlas("pack.atlas");
+        TextureManager.getInstance().getAtlas("images/pack.atlas");
 
         setScreen(new GameScreen(this));
         //setScreen(new MainMenuScreen());
-        Gdx.gl.glClearColor(0, 0, 0, 0);
+        Gdx.gl.glClearColor(1, 1, 1, 1);
     }
 }

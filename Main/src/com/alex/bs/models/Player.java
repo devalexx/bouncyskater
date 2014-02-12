@@ -13,6 +13,8 @@
  ******************************************************************************/
 package com.alex.bs.models;
 
+import com.alex.bs.managers.TextureManager;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
@@ -20,9 +22,10 @@ public class Player extends SimpleActor {
     private Fixture playerPhysicsFixture, playerSensorFixture;
 
     public Player() {
-        //sprite = TextureManager.getInstance().getSpriteFromDefaultAtlas("cloud");
+        sprite = TextureManager.getInstance().getSpriteFromDefaultAtlas("player");
         type = TYPE.PLAYER;
         setBodyBox(20, 80);
+        sprite.setSize(20, 90);
     }
 
     @Override
@@ -61,5 +64,12 @@ public class Player extends SimpleActor {
 
     public Fixture getPlayerSensorFixture() {
         return playerSensorFixture;
+    }
+
+    @Override
+    public void draw(SpriteBatch batch, float parentAlpha) {
+        super.draw(batch, parentAlpha);
+        sprite.setPosition(pos.x - getWidth() / 2, pos.y - getHeight() / 1.6f);
+        sprite.draw(batch);
     }
 }

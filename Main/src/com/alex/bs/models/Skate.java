@@ -13,16 +13,22 @@
  ******************************************************************************/
 package com.alex.bs.models;
 
+import com.alex.bs.managers.TextureManager;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 
 public class Skate extends SimpleActor {
     private Body leftWheelBody, rightWheelBody;
+    private Sprite wheel;
 
     public Skate() {
-        //sprite = TextureManager.getInstance().getSpriteFromDefaultAtlas("cloud");
+        sprite = TextureManager.getInstance().getSpriteFromDefaultAtlas("skate");
+        wheel = TextureManager.getInstance().getSpriteFromDefaultAtlas("wheel");
         type = SimpleActor.TYPE.SKATE;
+        sprite.setSize(100, 10);
+        wheel.setSize(10, 10);
         setBodyBox(100, 10);
     }
 
@@ -103,5 +109,24 @@ public class Skate extends SimpleActor {
     public void roll(float force) {
         leftWheelBody.applyTorque(force, true);
         rightWheelBody.applyTorque(force, true);
+    }
+
+    @Override
+    public void draw(SpriteBatch batch, float parentAlpha) {
+        super.draw(batch, parentAlpha);
+        sprite.setPosition(pos.x - getWidth() / 2, pos.y - getHeight() / 1.6f);
+        sprite.setOrigin(getWidth() / 2, getHeight() / 2);
+        sprite.setRotation(rot);
+        sprite.draw(batch);
+
+        wheel.setPosition(pos.x - getWidth() / 2.5f, pos.y - getHeight() * 2.5f);
+        wheel.setOrigin(getWidth() / 2, getHeight() / 2);
+        wheel.setRotation(rot);
+        wheel.draw(batch);
+
+        wheel.setPosition(pos.x + getWidth() / 3.5f, pos.y - getHeight() * 2.5f);
+        wheel.setOrigin(getWidth() / 2, getHeight() / 2);
+        wheel.setRotation(rot);
+        wheel.draw(batch);
     }
 }

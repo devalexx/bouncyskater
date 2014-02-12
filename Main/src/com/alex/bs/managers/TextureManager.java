@@ -80,7 +80,7 @@ public class TextureManager {
             return textureAtlasMap.get(path);
         } else {
             TextureAtlas textureAtlas = new TextureAtlas(Gdx.files.internal("data/" + path));
-            textureAtlasMap.put(path, textureAtlas);
+            textureAtlasMap.put(path.substring(path.lastIndexOf("/") + 1, path.length()), textureAtlas);
             for(Texture texture : textureAtlas.getTextures()) {
                 String name = "" + texture;
                 if(texture.getTextureData() instanceof FileTextureData)
