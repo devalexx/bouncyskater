@@ -28,6 +28,14 @@ public abstract class SimpleActor extends Actor {
     protected Vector2 linVel = new Vector2();
     protected Sprite sprite;
 
+    final short CATEGORY_PLAYER = 0x0001;
+    final short CATEGORY_SKATE = 0x0002;
+    final short CATEGORY_SCENERY = 0x0004;
+
+    final short MASK_PLAYER = CATEGORY_SCENERY;
+    final short MASK_SKATE = CATEGORY_SCENERY;
+    final short MASK_SCENERY = -1;
+
     public enum TYPE {
         NONE,
         GROUND,

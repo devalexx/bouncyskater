@@ -27,6 +27,10 @@ public class Player extends SimpleActor {
 
     @Override
     public void createPhysicsActor(World physicsWorld) {
+        Filter filter = new Filter();
+        filter.maskBits = MASK_PLAYER;
+        filter.categoryBits = CATEGORY_PLAYER;
+
         BodyDef def = new BodyDef();
         def.type = BodyDef.BodyType.DynamicBody;
         body = physicsWorld.createBody(def);
@@ -34,6 +38,7 @@ public class Player extends SimpleActor {
         PolygonShape poly = new PolygonShape();
         poly.setAsBox(getPhysicsWidth() / 2, getPhysicsHeight() / 2);
         playerPhysicsFixture = body.createFixture(poly, 1);
+        playerPhysicsFixture.setFilterData(filter);
         poly.dispose();
 
         CircleShape circle = new CircleShape();
@@ -41,6 +46,7 @@ public class Player extends SimpleActor {
         circle.setPosition(new Vector2(0, -getPhysicsHeight() / 2));
         playerSensorFixture = body.createFixture(circle, 0);
         playerSensorFixture.setFriction(100);
+        playerSensorFixture.setFilterData(filter);
         circle.dispose();
 
         body.setBullet(true);

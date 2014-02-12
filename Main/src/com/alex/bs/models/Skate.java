@@ -34,6 +34,8 @@ public class Skate extends SimpleActor {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = polygonShape;
         fixtureDef.density = 1;
+        fixtureDef.filter.categoryBits = CATEGORY_SKATE;
+        fixtureDef.filter.maskBits = MASK_SKATE;
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -52,6 +54,8 @@ public class Skate extends SimpleActor {
         fixtureDef2.shape = polygonShape2;
         fixtureDef2.density = 1;
         fixtureDef2.friction = 10.4f;
+        fixtureDef2.filter.categoryBits = CATEGORY_SKATE;
+        fixtureDef2.filter.maskBits = MASK_SKATE;
 
         BodyDef bodyDef2 = new BodyDef();
         bodyDef2.type = BodyDef.BodyType.DynamicBody;
@@ -69,6 +73,8 @@ public class Skate extends SimpleActor {
         fixtureDef3.shape = polygonShape3;
         fixtureDef3.density = 1;
         fixtureDef3.friction = 10.4f;
+        fixtureDef3.filter.categoryBits = CATEGORY_SKATE;
+        fixtureDef3.filter.maskBits = MASK_SKATE;
 
         BodyDef bodyDef3 = new BodyDef();
         bodyDef3.type = BodyDef.BodyType.DynamicBody;

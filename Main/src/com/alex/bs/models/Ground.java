@@ -30,6 +30,8 @@ public class Ground extends SimpleActor {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = polygonShape;
         fixtureDef.density = 1;
+        fixtureDef.filter.categoryBits = CATEGORY_SCENERY;
+        fixtureDef.filter.maskBits = MASK_SCENERY;
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
