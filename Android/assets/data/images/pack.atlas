@@ -17,6 +17,13 @@ skate
   orig: 256, 64
   offset: 0, 0
   index: -1
+wall
+  rotate: false
+  xy: 100, 194
+  size: 256, 64
+  orig: 256, 64
+  offset: 0, 0
+  index: -1
 wheel
   rotate: false
   xy: 2, 2
