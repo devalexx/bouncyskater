@@ -18,14 +18,17 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
+
 public class Player extends SimpleActor {
     private Fixture playerPhysicsFixture, playerSensorFixture;
+    private boolean canStandUp = true, standUp = true;
 
     public Player() {
         sprite = TextureManager.getInstance().getSpriteFromDefaultAtlas("player");
         type = TYPE.PLAYER;
         setBodyBox(20, 80);
-        sprite.setSize(20, 90);
+        setSpriteBox(30, 90);
     }
 
     @Override
@@ -68,8 +71,42 @@ public class Player extends SimpleActor {
 
     @Override
     public void draw(SpriteBatch batch, float parentAlpha) {
-        super.draw(batch, parentAlpha);
-        sprite.setPosition(pos.x - getWidth() / 2, pos.y - getHeight() / 1.6f);
+        sprite.setPosition(getX() - getWidth() / 1.3f, getY() - getHeight() / 1.6f);
+        sprite.setRotation(getRotation());
         sprite.draw(batch);
+    }
+
+    public void fall() {
+        if(!standUp)
+            return;
+
+        canStandUp = false;
+        standUp = false;
+        body.setFixedRotation(false);
+        addAction(
+            sequence(
+                delay(1),
+                run(new Runnable() {
+                    @Override
+                    public void run() {
+                        canStandUp = true;
+                    }
+                })
+            )
+        );
+    }
+
+    public boolean standUp() {
+        if(standUp)
+            return true;
+
+        if(canStandUp) {
+            if(getRotation() != 0)
+                setRotation(0);
+            body.setFixedRotation(true);
+            standUp = true;
+            return true;
+        } else
+            return false;
     }
 }

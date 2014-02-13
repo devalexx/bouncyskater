@@ -22,9 +22,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 public abstract class SimpleActor extends Actor {
     protected Body body;
     protected TYPE type = TYPE.NONE;
-    protected Vector2 pos = new Vector2();
-    protected Vector2 offset = new Vector2();
-    protected float rot;
     protected Vector2 linVel = new Vector2();
     protected Sprite sprite;
 
@@ -38,35 +35,45 @@ public abstract class SimpleActor extends Actor {
 
     public enum TYPE {
         NONE,
-        GROUND,
+        WALL,
         SKATE,
         PLAYER
     }
 
     public void createPhysicsActor(World physicsWorld) {
-        body.setTransform(pos.cpy().scl(GameStage.WORLD_TO_BOX), (float)Math.toRadians(rot));
+        body.setTransform(new Vector2(getX(), getY()).scl(GameStage.WORLD_TO_BOX), (float)Math.toRadians(getRotation()));
     }
 
     public void prepareActor() {}
 
-    public void setRotation(float a) {
-        if(body != null)
-            body.setTransform(getPosition(), (float)Math.toRadians(a));
-        rot = a;
+    public void setRotation(float a, boolean applyToBody) {
+        if(body != null && applyToBody)
+            body.setTransform(new Vector2(getX(), getY()).scl(GameStage.WORLD_TO_BOX), (float)Math.toRadians(a));
+        super.setRotation(a);
     }
 
-    public float getRotation() {
-        return rot;
+    @Override
+    public void setRotation(float degrees) {
+        setRotation(degrees, true);
     }
 
     public void setPosition(Vector2 vec) {
-        if(body != null)
-            body.setTransform(vec.cpy().scl(GameStage.WORLD_TO_BOX), body.getAngle());
-        pos.set(vec);
+        setPosition(vec, true);
     }
 
-    public Vector2 getPosition() {
-        return pos;
+    public void setPosition(Vector2 vec, boolean applyToBody) {
+        setPosition(vec.x, vec.y, applyToBody);
+    }
+
+    @Override
+    public void setPosition(float x, float y) {
+        setPosition(x, y, true);
+    }
+
+    public void setPosition(float x, float y, boolean applyToBody) {
+        if(body != null && applyToBody)
+            body.setTransform(new Vector2(x, y).scl(GameStage.WORLD_TO_BOX), body.getAngle());
+        super.setPosition(x, y);
     }
 
     public void setLinearVelocity(Vector2 vec) {
@@ -80,11 +87,13 @@ public abstract class SimpleActor extends Actor {
 
     @Override
     public void act(float delta) {
-        pos = body.getPosition();
-        rot = (float)Math.toDegrees(body.getAngle());
+        super.act(delta);
+        Vector2 pos = body.getPosition();
+        setRotation((float)Math.toDegrees(body.getAngle()), false);
         linVel = body.getLinearVelocity();
         pos.scl(GameStage.BOX_TO_WORLD);
         linVel.scl(GameStage.BOX_TO_WORLD);
+        setPosition(pos.x, pos.y, false);
     }
 
     public void applyForceToCenter(Vector2 vec) {
@@ -118,6 +127,7 @@ public abstract class SimpleActor extends Actor {
 
     public void setSpriteBox(float width, float height) {
         sprite.setSize(width, height);
+        sprite.setOrigin(width / 2, height / 2);
     }
 
     public float getPhysicsWidth() {
@@ -126,5 +136,19 @@ public abstract class SimpleActor extends Actor {
 
     public float getPhysicsHeight() {
         return getHeight() * GameStage.WORLD_TO_BOX;
+    }
+
+    @Override
+    public void draw(SpriteBatch batch, float parentAlpha) {
+        if(sprite == null)
+            return;
+
+        sprite.setPosition(getX() - sprite.getWidth() / 2, getY() - sprite.getHeight() / 2);
+        sprite.setRotation(getRotation());
+        sprite.draw(batch);
+    }
+
+    public Vector2 getPosition() {
+        return new Vector2(getX(), getY());
     }
 }

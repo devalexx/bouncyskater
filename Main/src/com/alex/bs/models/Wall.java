@@ -13,13 +13,18 @@
  ******************************************************************************/
 package com.alex.bs.models;
 
+import com.alex.bs.managers.TextureManager;
+import com.alex.bs.stages.GameStage;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
-public class Ground extends SimpleActor {
-    public Ground() {
-        //sprite = TextureManager.getInstance().getSpriteFromDefaultAtlas("cloud");
-        type = TYPE.GROUND;
+public class Wall extends SimpleActor {
+    public Wall() {
+        sprite = TextureManager.getInstance().getSpriteFromDefaultAtlas("wall");
+        type = TYPE.WALL;
         setBodyBox(400, 20);
+        setSpriteBox(400, 20);
     }
 
     @Override

@@ -58,17 +58,13 @@ public class GameStage extends Stage {
         wall.setRotation(-10);
         addActor(wall);
         wall = new Wall();
-        wall.setPosition(new Vector2(200, -50));
-        wall.setRotation(90);
+        wall.setPosition(new Vector2(400, -10));
+        wall.setRotation(0);
         addActor(wall);
 
         player = new Player();
         player.setPosition(new Vector2(100, 50));
         addActor(player);
-
-        RevoluteJointDef jointDef = new RevoluteJointDef();
-        jointDef.initialize(player.getBody(), skate.getBody(), player.getBody().getWorldCenter());
-        //joint = physicsWorld.createJoint(jointDef);
     }
 
     public World getPhysicsWorld() {
@@ -85,7 +81,7 @@ public class GameStage extends Stage {
 
     @Override
     public void act(float delta) {
-        getCamera().position.set(player.getPosition().x, player.getPosition().y, 0f);
+        getCamera().position.set(player.getX(), player.getY(), 0f);
         getCamera().update();
         getSpriteBatch().setProjectionMatrix(getCamera().projection);
 
@@ -97,23 +93,27 @@ public class GameStage extends Stage {
                 (joint.getReactionForce(1 / 60f).len() > 0.003 ||
                         skate.getRotation() < -60 ||
                         skate.getRotation() > 60)) {
+            player.fall();
             physicsWorld.destroyJoint(joint);
             joint = null;
         }
 
         if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            if(joint != null) {
-                if(skate.getLinearVelocity().x > -MAX_VELOCITY * 3)
-                    skate.applyForceToCenter(-2, 0, true);
-            } else if(player.getLinearVelocity().x > -MAX_VELOCITY)
-                player.applyForceToCenter(-2, 0, true);
+            if(player.standUp()) {
+                if(joint != null) {
+                    if(skate.getLinearVelocity().x > -MAX_VELOCITY * 3)
+                        skate.applyForceToCenter(-2, 0, true);
+                } else if(player.getLinearVelocity().x > -MAX_VELOCITY)
+                    player.applyForceToCenter(-2, 0, true);
+            }
         } else if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            if(joint != null) {
-                if(skate.getLinearVelocity().x < MAX_VELOCITY * 3)
-                    skate.applyForceToCenter(1, 0, true);
-            } else if(player.getLinearVelocity().x < MAX_VELOCITY)
-                player.applyForceToCenter(2, 0, true);
-            float a = player.getBody().getFixtureList().get(0).getFriction();
+            if(player.standUp()) {
+                if(joint != null) {
+                    if(skate.getLinearVelocity().x < MAX_VELOCITY * 3)
+                        skate.applyForceToCenter(1, 0, true);
+                } else if(player.getLinearVelocity().x < MAX_VELOCITY)
+                    player.applyForceToCenter(2, 0, true);
+            }
         }
 
         canJump = isPlayerGrounded();
@@ -123,12 +123,12 @@ public class GameStage extends Stage {
     public boolean keyDown(int keyCode) {
         switch(keyCode) {
             case Input.Keys.SPACE:
-                if(joint == null) {
-                    player.setPosition(skate.getPosition().cpy().add(0, player.getHeight() / 1.3f));
+                if(player.standUp() && joint == null && player.getPosition().dst(skate.getPosition()) < 50) {
+                    player.setPosition(new Vector2(skate.getX(), skate.getY()).add(0, player.getHeight() / 1.8f));
                     RevoluteJointDef jointDef = new RevoluteJointDef();
                     jointDef.initialize(player.getBody(), skate.getBody(), player.getBody().getWorldCenter());
                     joint = physicsWorld.createJoint(jointDef);
-                } else {
+                } else if(joint != null) {
                     physicsWorld.destroyJoint(joint);
                     joint = null;
                 }
@@ -137,7 +137,7 @@ public class GameStage extends Stage {
                 debug = !debug;
                 break;
             case Input.Keys.UP:
-                if(canJump)
+                if(player.standUp() && canJump)
                     player.applyForceToCenter(new Vector2(0, 30));
                 break;
         }
@@ -152,11 +152,10 @@ public class GameStage extends Stage {
 
             if(contact.isTouching() && (contact.getFixtureA() == player.getPlayerSensorFixture() ||
                     contact.getFixtureB() == player.getPlayerSensorFixture())) {
-                Vector2 pos = player.getPosition();
                 WorldManifold manifold = contact.getWorldManifold();
                 boolean below = true;
                 for(int j = 0; j < manifold.getNumberOfContactPoints(); j++) {
-                    below &= (manifold.getPoints()[j].y < pos.y - 0.4f);
+                    below &= (manifold.getPoints()[j].y < player.getY() - 0.4f);
                 }
 
                 if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT) && below)

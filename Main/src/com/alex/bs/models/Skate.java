@@ -14,6 +14,7 @@
 package com.alex.bs.models;
 
 import com.alex.bs.managers.TextureManager;
+import com.alex.bs.stages.GameStage;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -27,8 +28,10 @@ public class Skate extends SimpleActor {
         sprite = TextureManager.getInstance().getSpriteFromDefaultAtlas("skate");
         wheel = TextureManager.getInstance().getSpriteFromDefaultAtlas("wheel");
         type = SimpleActor.TYPE.SKATE;
-        sprite.setSize(100, 10);
+        sprite.setSize(100, 30);
         wheel.setSize(10, 10);
+        sprite.setOrigin(sprite.getWidth() / 2, sprite.getHeight() / 2);
+        wheel.setOrigin(wheel.getWidth() / 2, wheel.getHeight() / 2);
         setBodyBox(100, 10);
     }
 
@@ -65,7 +68,7 @@ public class Skate extends SimpleActor {
 
         BodyDef bodyDef2 = new BodyDef();
         bodyDef2.type = BodyDef.BodyType.DynamicBody;
-        bodyDef2.position.set(new Vector2(-getPhysicsWidth() / 3, -getPhysicsWidth() / 5));
+        bodyDef2.position.set(new Vector2(-getPhysicsWidth() / 3.5f, -getPhysicsWidth() / 5));
         leftWheelBody = physicsWorld.createBody(bodyDef2);
         leftWheelBody.createFixture(fixtureDef2);
         leftWheelBody.resetMassData();
@@ -84,7 +87,7 @@ public class Skate extends SimpleActor {
 
         BodyDef bodyDef3 = new BodyDef();
         bodyDef3.type = BodyDef.BodyType.DynamicBody;
-        bodyDef3.position.set(new Vector2(getPhysicsWidth() / 3 , -getPhysicsWidth() / 5));
+        bodyDef3.position.set(new Vector2(getPhysicsWidth() / 3.5f , -getPhysicsWidth() / 5));
         rightWheelBody = physicsWorld.createBody(bodyDef3);
         rightWheelBody.createFixture(fixtureDef3);
         rightWheelBody.resetMassData();
@@ -113,20 +116,18 @@ public class Skate extends SimpleActor {
 
     @Override
     public void draw(SpriteBatch batch, float parentAlpha) {
-        super.draw(batch, parentAlpha);
-        sprite.setPosition(pos.x - getWidth() / 2, pos.y - getHeight() / 1.6f);
-        sprite.setOrigin(getWidth() / 2, getHeight() / 2);
-        sprite.setRotation(rot);
+        sprite.setPosition(getX() - sprite.getWidth() / 2, getY() - sprite.getHeight() / 1.5f);
+        sprite.setRotation(getRotation());
         sprite.draw(batch);
 
-        wheel.setPosition(pos.x - getWidth() / 2.5f, pos.y - getHeight() * 2.5f);
-        wheel.setOrigin(getWidth() / 2, getHeight() / 2);
-        wheel.setRotation(rot);
+        Vector2 leftPos = leftWheelBody.getPosition().scl(GameStage.BOX_TO_WORLD);
+        wheel.setPosition(leftPos.x - wheel.getWidth() / 2, leftPos.y - wheel.getHeight() / 2);
+        wheel.setRotation(leftWheelBody.getAngle());
         wheel.draw(batch);
 
-        wheel.setPosition(pos.x + getWidth() / 3.5f, pos.y - getHeight() * 2.5f);
-        wheel.setOrigin(getWidth() / 2, getHeight() / 2);
-        wheel.setRotation(rot);
+        Vector2 rightPos = rightWheelBody.getPosition().scl(GameStage.BOX_TO_WORLD);
+        wheel.setPosition(rightPos.x - wheel.getWidth() / 2, rightPos.y - wheel.getHeight() / 2);
+        wheel.setRotation(rightWheelBody.getAngle());
         wheel.draw(batch);
     }
 }
