@@ -120,6 +120,11 @@ public abstract class SimpleActor extends Actor {
         return type.toString();
     }
 
+    public void setSpriteAndBodyBox(float width, float height) {
+        setBodyBox(width, height);
+        setSpriteBox(width, height);
+    }
+
     public void setBodyBox(float width, float height) {
         setWidth(width);
         setHeight(height);

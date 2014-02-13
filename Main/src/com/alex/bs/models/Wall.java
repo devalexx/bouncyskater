@@ -23,8 +23,7 @@ public class Wall extends SimpleActor {
     public Wall() {
         sprite = TextureManager.getInstance().getSpriteFromDefaultAtlas("wall");
         type = TYPE.WALL;
-        setBodyBox(400, 20);
-        setSpriteBox(400, 20);
+        setSpriteAndBodyBox(400, 20);
     }
 
     @Override
