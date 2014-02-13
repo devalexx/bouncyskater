@@ -1,0 +1,1 @@
+Wall = luajava.bindClass("com.alex.bs.models.Wall")

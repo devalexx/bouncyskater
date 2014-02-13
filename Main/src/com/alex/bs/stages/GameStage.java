@@ -29,6 +29,10 @@ import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
+import org.luaj.vm2.*;
+import org.luaj.vm2.lib.jse.*;
+
+import java.io.*;
 
 public class GameStage extends Stage {
     public static final float WORLD_TO_BOX = 0.01f;
@@ -39,8 +43,8 @@ public class GameStage extends Stage {
     private Action leftAction, rightAction;
     private Joint joint;
     private float MAX_VELOCITY = 100;
-    private boolean canJump;
-    private boolean debug;
+    private boolean canJump, debug, wonGame;
+    private LuaFunction onCreateLuaFunc, onCheckLuaFunc;
 
     public GameStage(float width, float height) {
         super(width, height, true);
@@ -65,6 +69,28 @@ public class GameStage extends Stage {
         player = new Player();
         player.setPosition(new Vector2(100, 50));
         addActor(player);
+
+        InputStream streamInit = Gdx.files.internal("data/levels/init.lua").read();
+        InputStream streamLevel = Gdx.files.internal("data/levels/test.lua").read();
+        Globals globals = JsePlatform.standardGlobals();
+        Prototype prototype;
+        try {
+            prototype = globals.loadPrototype(streamInit, "init_script", "t");
+            LuaClosure closure = new LuaClosure(prototype, globals);
+            closure.call();
+
+            prototype = globals.loadPrototype(streamLevel, "level_script", "t");
+            closure = new LuaClosure(prototype, globals);
+            closure.call();
+
+            globals.rawset("stage", CoerceJavaToLua.coerce(this));
+            onCreateLuaFunc = (LuaFunction) globals.rawget("onCreate");
+            onCheckLuaFunc = (LuaFunction) globals.rawget("onCheck");
+
+            onCreateLuaFunc.call();
+        } catch (IOException e) {
+            System.err.println(e);
+        }
     }
 
     public World getPhysicsWorld() {
@@ -117,6 +143,9 @@ public class GameStage extends Stage {
         }
 
         canJump = isPlayerGrounded();
+
+        if(onCheckLuaFunc.call().toboolean(1) && !wonGame)
+            wonGame = true;
     }
 
     @Override
