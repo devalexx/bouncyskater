@@ -13,7 +13,7 @@
  ******************************************************************************/
 package com.alex.bs.stages;
 
-import com.alex.bs.models.Ground;
+import com.alex.bs.models.Wall;
 import com.alex.bs.models.Player;
 import com.alex.bs.models.SimpleActor;
 import com.alex.bs.models.Skate;
@@ -40,6 +40,7 @@ public class GameStage extends Stage {
     private Joint joint;
     private float MAX_VELOCITY = 100;
     private boolean canJump;
+    private boolean debug;
 
     public GameStage(float width, float height) {
         super(width, height, true);
@@ -49,17 +50,17 @@ public class GameStage extends Stage {
         skate = new Skate();
         addActor(skate);
 
-        Ground ground = new Ground();
-        ground.setPosition(new Vector2(0, -50));
-        addActor(ground);
-        ground = new Ground();
-        ground.setPosition(new Vector2(-200, -50));
-        ground.setRotation(-10);
-        addActor(ground);
-        ground = new Ground();
-        ground.setPosition(new Vector2(200, -50));
-        ground.setRotation(90);
-        addActor(ground);
+        Wall wall = new Wall();
+        wall.setPosition(new Vector2(0, -50));
+        addActor(wall);
+        wall = new Wall();
+        wall.setPosition(new Vector2(-200, -50));
+        wall.setRotation(-10);
+        addActor(wall);
+        wall = new Wall();
+        wall.setPosition(new Vector2(200, -50));
+        wall.setRotation(90);
+        addActor(wall);
 
         player = new Player();
         player.setPosition(new Vector2(100, 50));
@@ -87,9 +88,10 @@ public class GameStage extends Stage {
         getCamera().position.set(player.getPosition().x, player.getPosition().y, 0f);
         getCamera().update();
         getSpriteBatch().setProjectionMatrix(getCamera().projection);
-        super.act(delta);
 
         physicsWorld.step(1 / 60f, 8, 3);
+
+        super.act(delta);
 
         if(joint != null &&
                 (joint.getReactionForce(1 / 60f).len() > 0.003 ||
@@ -131,6 +133,9 @@ public class GameStage extends Stage {
                     joint = null;
                 }
                 break;
+            case Input.Keys.D:
+                debug = !debug;
+                break;
             case Input.Keys.UP:
                 if(canJump)
                     player.applyForceToCenter(new Vector2(0, 30));
@@ -163,5 +168,9 @@ public class GameStage extends Stage {
             }
         }
         return false;
+    }
+
+    public boolean isDebug() {
+        return debug;
     }
 }

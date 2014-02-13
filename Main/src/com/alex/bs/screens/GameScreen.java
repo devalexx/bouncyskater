@@ -40,11 +40,13 @@ public class GameScreen implements Screen {
         world.act(delta);
         world.draw();
 
-        Matrix4 debugMatrix=new Matrix4(camera.combined);
-        debugMatrix.scl(GameStage.BOX_TO_WORLD);
+        if(world.isDebug()) {
+            Matrix4 debugMatrix = new Matrix4(camera.combined);
+            debugMatrix.scl(GameStage.BOX_TO_WORLD);
 
-        Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
-        debugRenderer.render(world.getPhysicsWorld(), debugMatrix);
+            Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
+            debugRenderer.render(world.getPhysicsWorld(), debugMatrix);
+        }
     }
 
     @Override
