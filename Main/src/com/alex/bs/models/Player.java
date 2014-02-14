@@ -14,15 +14,21 @@
 package com.alex.bs.models;
 
 import com.alex.bs.managers.TextureManager;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
+import com.badlogic.gdx.utils.Array;
 
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 
 public class Player extends SimpleActor {
     private Fixture playerPhysicsFixture, playerSensorFixture;
     private boolean canStandUp = true, standUp = true;
+    private Joint skateJoint;
+    private Skate skate;
+    private float MAX_VELOCITY = 100;
 
     public Player() {
         sprite = TextureManager.getInstance().getSpriteFromDefaultAtlas("player");
@@ -108,5 +114,82 @@ public class Player extends SimpleActor {
             return true;
         } else
             return false;
+    }
+
+    public boolean isPlayerGrounded() {
+        Array<Contact> contactList = physicsWorld.getContactList();
+        for(int i = 0; i < contactList.size; i++) {
+            Contact contact = contactList.get(i);
+
+            if(contact.isTouching() && (contact.getFixtureA() == playerSensorFixture ||
+                    contact.getFixtureB() == playerSensorFixture)) {
+                WorldManifold manifold = contact.getWorldManifold();
+                boolean below = true;
+                for(int j = 0; j < manifold.getNumberOfContactPoints(); j++) {
+                    below &= (manifold.getPoints()[j].y < getY() - 0.4f);
+                }
+
+                if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT) && below)
+                    contact.setFriction(100F);
+                else
+                    contact.setFriction(0F);
+
+                return below;
+            }
+        }
+        return false;
+    }
+
+    public void attachSkate(Skate skate) {
+        if(standUp() && skateJoint == null && getPosition().dst(skate.getPosition()) < 50) {
+            setPosition(new Vector2(skate.getX(), skate.getY()).add(0, getHeight() / 1.8f));
+            RevoluteJointDef jointDef = new RevoluteJointDef();
+            jointDef.initialize(getBody(), skate.getBody(), getBody().getWorldCenter());
+            skateJoint = physicsWorld.createJoint(jointDef);
+            this.skate = skate;
+        }
+    }
+
+    public void detachSkate() {
+        if(skateJoint != null) {
+            physicsWorld.destroyJoint(skateJoint);
+            skateJoint = null;
+            this.skate = null;
+        }
+    }
+
+    public boolean isSkateAttached() {
+        return skateJoint != null;
+    }
+
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+
+        if(skateJoint != null &&
+                (skateJoint.getReactionForce(1 / 60f).len() > 0.003 ||
+                        skate.getRotation() < -60 ||
+                        skate.getRotation() > 60)) {
+            fall();
+            detachSkate();
+        }
+
+        if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            if(standUp()) {
+                if(skateJoint != null) {
+                    if(skate.getLinearVelocity().x > -MAX_VELOCITY * 3)
+                        skate.applyForceToCenter(-2, 0, true);
+                } else if(getLinearVelocity().x > -MAX_VELOCITY)
+                    applyForceToCenter(-2, 0, true);
+            }
+        } else if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            if(standUp()) {
+                if(skateJoint != null) {
+                    if(skate.getLinearVelocity().x < MAX_VELOCITY * 3)
+                        skate.applyForceToCenter(1, 0, true);
+                } else if(getLinearVelocity().x < MAX_VELOCITY)
+                    applyForceToCenter(2, 0, true);
+            }
+        }
     }
 }

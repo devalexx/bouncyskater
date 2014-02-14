@@ -24,6 +24,7 @@ public abstract class SimpleActor extends Actor {
     protected TYPE type = TYPE.NONE;
     protected Vector2 linVel = new Vector2();
     protected Sprite sprite;
+    protected World physicsWorld;
 
     final short CATEGORY_PLAYER = 0x0001;
     final short CATEGORY_SKATE = 0x0002;
@@ -41,6 +42,7 @@ public abstract class SimpleActor extends Actor {
     }
 
     public void createPhysicsActor(World physicsWorld) {
+        this.physicsWorld = physicsWorld;
         body.setTransform(new Vector2(getX(), getY()).scl(GameStage.WORLD_TO_BOX), (float)Math.toRadians(getRotation()));
     }
 
