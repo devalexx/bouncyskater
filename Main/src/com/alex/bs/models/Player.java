@@ -25,7 +25,7 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 
 public class Player extends SimpleActor {
     private Fixture playerPhysicsFixture, playerSensorFixture;
-    private boolean canStandUp = true, standUp = true;
+    private boolean canStandUp = true, standUp = true, playerGrounded;
     private Joint skateJoint;
     private Skate skate;
     private float MAX_VELOCITY = 100;
@@ -116,7 +116,8 @@ public class Player extends SimpleActor {
             return false;
     }
 
-    public boolean isPlayerGrounded() {
+    // Hack fix friction
+    private boolean checkPlayerGroundedAndHack() {
         Array<Contact> contactList = physicsWorld.getContactList();
         for(int i = 0; i < contactList.size; i++) {
             Contact contact = contactList.get(i);
@@ -137,7 +138,12 @@ public class Player extends SimpleActor {
                 return below;
             }
         }
+
         return false;
+    }
+
+    public boolean isPlayerGrounded() {
+        return playerGrounded;
     }
 
     public void attachSkate(Skate skate) {
@@ -165,6 +171,8 @@ public class Player extends SimpleActor {
     @Override
     public void act(float delta) {
         super.act(delta);
+
+        playerGrounded = checkPlayerGroundedAndHack();
 
         if(skateJoint != null &&
                 (skateJoint.getReactionForce(1 / 60f).len() > 0.003 ||
