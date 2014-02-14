@@ -29,14 +29,11 @@ import org.luaj.vm2.lib.jse.*;
 
 import java.io.*;
 
-public class GameStage extends Stage {
-    public static final float WORLD_TO_BOX = 0.01f;
-    public static final float BOX_TO_WORLD = 1 / WORLD_TO_BOX;
-    private World physicsWorld;
+public class GameStage extends BasicStage {
     private Skate skate;
     private Player player;
     private Action leftAction, rightAction;
-    private boolean canJump, debug, wonGame;
+    private boolean canJump, wonGame;
     private LuaFunction onCreateLuaFunc, onCheckLuaFunc;
 
     public GameStage(float width, float height) {
@@ -86,18 +83,6 @@ public class GameStage extends Stage {
         }
     }
 
-    public World getPhysicsWorld() {
-        return physicsWorld;
-    }
-
-    @Override
-    public void addActor(Actor actor) {
-        super.addActor(actor);
-
-        if(actor instanceof SimpleActor)
-            ((SimpleActor) actor).createPhysicsActor(physicsWorld);
-    }
-
     @Override
     public void act(float delta) {
         getCamera().position.set(player.getX(), player.getY(), 0f);
@@ -108,7 +93,7 @@ public class GameStage extends Stage {
 
         super.act(delta);
 
-        canJump = player.isPlayerGrounded();
+        canJump = player.isPlayerGrounded(); // hack: set friction (todo: remove)
 
         if(onCheckLuaFunc.call().toboolean(1) && !wonGame)
             wonGame = true;
@@ -123,9 +108,6 @@ public class GameStage extends Stage {
                 else
                     player.attachSkate(skate);
                 break;
-            case Input.Keys.D:
-                debug = !debug;
-                break;
             case Input.Keys.UP:
                 if(player.standUp() && canJump)
                     player.applyForceToCenter(new Vector2(0, 30));
@@ -133,9 +115,5 @@ public class GameStage extends Stage {
         }
 
         return super.keyDown(keyCode);
-    }
-
-    public boolean isDebug() {
-        return debug;
     }
 }

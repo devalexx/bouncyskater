@@ -11,24 +11,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.alex.bs;
+package com.alex.bs.screens;
 
-import com.alex.bs.managers.TextureManager;
-import com.alex.bs.screens.*;
-import com.badlogic.gdx.Application;
-import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.alex.bs.BSGame;
+import com.alex.bs.stages.GameStage;
+import com.badlogic.gdx.*;
+import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 
-public class BSGame extends Game {
-    @Override
-    public void create() {
-        TextureManager.getInstance().getAtlas("images/pack.atlas");
+public class EditorScreen extends BasicScreen {
+    private GameStage world;
 
-        //setScreen(new GameScreen(this));
-        setScreen(new EditorScreen(this));
-        Gdx.gl.glClearColor(1, 1, 1, 1);
+    public EditorScreen(BSGame game) {
+        super(game, new GameStage(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+        world = (GameStage) stage;
+        this.game = game;
     }
 }
