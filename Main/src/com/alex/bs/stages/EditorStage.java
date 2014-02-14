@@ -15,20 +15,28 @@ package com.alex.bs.stages;
 
 import com.alex.bs.models.*;
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.*;
+import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.jse.*;
 
 import java.io.*;
 
 public class EditorStage extends BasicStage {
+    private Vector2 moveScreen, moveActor, nowScreen, nowActor;
+    private float screenScaleX, screenScaleY;
+    private boolean enablePhysics;
+    private Actor selectedActor;
+    private ShapeRenderer shapeRenderer = new ShapeRenderer();
 
     public EditorStage(float width, float height) {
         super(width, height, true);
 
-        physicsWorld = new World(new Vector2(0, 0), true);
+        physicsWorld = new World(new Vector2(0, -9.8f), true);
 
         Skate skate = new Skate();
         addActor(skate);
@@ -53,11 +61,43 @@ public class EditorStage extends BasicStage {
     }
 
     @Override
+    public void addActor(Actor actor) {
+        actor.addListener(new DragListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                if(button == 0) {
+                    selectedActor = event.getTarget();
+                }
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+
+        });
+        super.addActor(actor);
+    }
+
+    @Override
     public void act(float delta) {
         getCamera().update();
         getSpriteBatch().setProjectionMatrix(getCamera().projection);
 
-        physicsWorld.step(1 / 60f, 8, 3);
+        shapeRenderer.setColor(Color.BLUE);
+        shapeRenderer.setProjectionMatrix(getCamera().combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        for(Actor a : getRoot().getChildren()) {
+            //shapeRenderer.rotate(0.f, 0.f, 1.f, a.getRotation());
+            shapeRenderer.identity();
+            //shapeRenderer.rotate(0, 0, 1, 90);
+            shapeRenderer.rect(a.getX(), a.getY(), a.getWidth(), a.getHeight());
+        }
+        shapeRenderer.end();
+
+        if(enablePhysics) {
+            physicsWorld.step(1 / 60f, 8, 3);
+        }
+
+        screenScaleX = getCamera().viewportWidth / Gdx.graphics.getWidth();
+        screenScaleY = getCamera().viewportHeight / Gdx.graphics.getHeight();
 
         super.act(delta);
     }
@@ -66,21 +106,64 @@ public class EditorStage extends BasicStage {
     public boolean keyDown(int keyCode) {
         switch(keyCode) {
             case Input.Keys.SPACE:
-                break;
-            case Input.Keys.UP:
-                getCamera().position.add(0, 10, 0);
-                break;
-            case Input.Keys.DOWN:
-                getCamera().position.add(0, -10, 0);
-                break;
-            case Input.Keys.LEFT:
-                getCamera().position.add(-10, 0, 0);
-                break;
-            case Input.Keys.RIGHT:
-                getCamera().position.add(10, 0, 0);
+                enablePhysics = !enablePhysics;
                 break;
         }
 
         return super.keyDown(keyCode);
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        boolean result = super.touchDown(screenX, screenY, pointer, button);
+
+        if(button == 1) {
+            moveScreen = new Vector2(-screenX * screenScaleX, screenY * screenScaleY);
+            nowScreen = new Vector2(getCamera().position.x, getCamera().position.y);
+        } else if(button == 0 && selectedActor != null) {
+            moveActor = new Vector2(screenX * screenScaleX, -screenY * screenScaleY);
+            nowActor = new Vector2(selectedActor.getX(), selectedActor.getY());
+        }
+
+        return result;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        if(moveScreen != null) {
+            Vector2 pos = nowScreen.cpy().add(
+                    new Vector2(-screenX * screenScaleX, screenY * screenScaleY).sub(moveScreen));
+            getCamera().position.set(pos.x, pos.y, 0);
+        }
+
+        if(moveActor != null) {
+            Vector2 pos = nowActor.cpy().add(
+                    new Vector2(screenX * screenScaleX, -screenY * screenScaleY).sub(moveActor));
+            selectedActor.setPosition(pos.x, pos.y);
+        }
+
+        return super.touchDragged(screenX, screenY, pointer);
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        if(button == 1 && moveScreen != null) {
+            moveScreen = null;
+            nowScreen = null;
+        } else if(button == 0 && moveActor != null) {
+            moveActor = null;
+            nowActor = null;
+            selectedActor = null;
+        }
+
+        return super.touchUp(screenX, screenY, pointer, button);
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        getCamera().viewportWidth = getCamera().viewportWidth * (amount < 0 ? 0.5f : 2);
+        getCamera().viewportHeight = getCamera().viewportHeight * (amount < 0 ? 0.5f : 2);
+
+        return super.scrolled(amount);
     }
 }

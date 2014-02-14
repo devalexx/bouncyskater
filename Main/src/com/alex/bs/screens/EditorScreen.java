@@ -14,18 +14,15 @@
 package com.alex.bs.screens;
 
 import com.alex.bs.BSGame;
-import com.alex.bs.stages.GameStage;
+import com.alex.bs.stages.*;
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 
 public class EditorScreen extends BasicScreen {
-    private GameStage world;
+    private EditorStage world;
 
     public EditorScreen(BSGame game) {
-        super(game, new GameStage(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
-        world = (GameStage) stage;
+        super(game, new EditorStage(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+        world = (EditorStage) stage;
         this.game = game;
     }
 }
