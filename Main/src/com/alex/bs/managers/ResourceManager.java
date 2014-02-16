@@ -17,10 +17,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.FileTextureData;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import java.util.*;
 
-public class TextureManager {
+public class ResourceManager {
     private Map<String, Texture> textureMap = new HashMap<String, Texture>();
     private Map<Texture, TextureData> textureDataMap = new HashMap<Texture, TextureData>();
 
@@ -28,12 +29,16 @@ public class TextureManager {
     private Map<String, TextureAtlas> textureAtlasNameMap = new HashMap<String, TextureAtlas>();
     private Map<TextureAtlas, TextureAtlas.TextureAtlasData> textureAtlasDataMap =
             new HashMap<TextureAtlas, TextureAtlas.TextureAtlasData>();
+    private Skin skin;
 
-    private static TextureManager manager = new TextureManager();
+    private static ResourceManager manager = new ResourceManager();
     
-    private TextureManager() {}
+    private ResourceManager() {
+        getAtlas("images/pack.atlas");
+        skin = new Skin(Gdx.files.internal("data/skins/uiskin.json"));
+    }
 
-    public static TextureManager getInstance() {
+    public static ResourceManager getInstance() {
         return manager;
     }
 
@@ -109,5 +114,9 @@ public class TextureManager {
         for(Texture texture : textureMap.values()) {
             texture.load(textureDataMap.get(texture));
         }
+    }
+
+    public Skin getSkin() {
+        return skin;
     }
 }
