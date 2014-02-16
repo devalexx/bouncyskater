@@ -13,7 +13,7 @@
  ******************************************************************************/
 package com.alex.bs.models;
 
-import com.alex.bs.managers.TextureManager;
+import com.alex.bs.managers.ResourceManager;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -31,7 +31,7 @@ public class Player extends SimpleActor {
     private float MAX_VELOCITY = 100;
 
     public Player() {
-        sprite = TextureManager.getInstance().getSpriteFromDefaultAtlas("player");
+        sprite = ResourceManager.getInstance().getSpriteFromDefaultAtlas("player");
         type = TYPE.PLAYER;
         setBodyBox(20, 80);
         setSpriteBox(30, 90);
@@ -127,7 +127,7 @@ public class Player extends SimpleActor {
                 WorldManifold manifold = contact.getWorldManifold();
                 boolean below = true;
                 for(int j = 0; j < manifold.getNumberOfContactPoints(); j++) {
-                    below &= (manifold.getPoints()[j].y < getY() - 0.4f);
+                    //below &= (manifold.getPoints()[j].y < getY() - 0.4f);
                 }
 
                 if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT) && below)

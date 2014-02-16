@@ -13,15 +13,12 @@
  ******************************************************************************/
 package com.alex.bs.models;
 
-import com.alex.bs.managers.TextureManager;
-import com.alex.bs.stages.GameStage;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
+import com.alex.bs.managers.ResourceManager;
 import com.badlogic.gdx.physics.box2d.*;
 
 public class Wall extends SimpleActor {
     public Wall() {
-        sprite = TextureManager.getInstance().getSpriteFromDefaultAtlas("wall");
+        sprite = ResourceManager.getInstance().getSpriteFromDefaultAtlas("wall");
         type = TYPE.WALL;
         setSpriteAndBodyBox(400, 20);
     }

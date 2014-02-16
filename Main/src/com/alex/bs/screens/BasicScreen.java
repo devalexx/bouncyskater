@@ -21,12 +21,12 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 
 public abstract  class BasicScreen implements Screen {
     protected Stage stage;
@@ -60,8 +60,9 @@ public abstract  class BasicScreen implements Screen {
                 shapeRenderer.setProjectionMatrix(stage.getCamera().combined);
                 shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
                 for(Actor a : stage.getRoot().getChildren()) {
+                    if(a instanceof Layout)
+                        continue;
                     shapeRenderer.identity();
-                    //shapeRenderer.translate(-a.getWidth() / 2, -a.getHeight() / 2, 0);
                     shapeRenderer.translate(a.getX(), a.getY(), 0);
                     shapeRenderer.rotate(0, 0, 1, a.getRotation());
                     shapeRenderer.rect(-a.getWidth() / 2, -a.getHeight() / 2, a.getWidth(), a.getHeight());
@@ -81,7 +82,7 @@ public abstract  class BasicScreen implements Screen {
 
     @Override
     public void show() {
-        camera = (OrthographicCamera) stage.getCamera();
+        camera = stage.getCamera();
         camera.viewportHeight = 480;
         camera.viewportWidth = 800;
 

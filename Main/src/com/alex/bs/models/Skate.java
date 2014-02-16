@@ -13,7 +13,7 @@
  ******************************************************************************/
 package com.alex.bs.models;
 
-import com.alex.bs.managers.TextureManager;
+import com.alex.bs.managers.ResourceManager;
 import com.alex.bs.stages.GameStage;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Vector2;
@@ -25,8 +25,8 @@ public class Skate extends SimpleActor {
     private Sprite wheel;
 
     public Skate() {
-        sprite = TextureManager.getInstance().getSpriteFromDefaultAtlas("skate");
-        wheel = TextureManager.getInstance().getSpriteFromDefaultAtlas("wheel");
+        sprite = ResourceManager.getInstance().getSpriteFromDefaultAtlas("skate");
+        wheel = ResourceManager.getInstance().getSpriteFromDefaultAtlas("wheel");
         type = SimpleActor.TYPE.SKATE;
         sprite.setSize(100, 30);
         wheel.setSize(10, 10);

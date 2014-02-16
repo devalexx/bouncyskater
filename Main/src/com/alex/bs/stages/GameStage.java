@@ -54,7 +54,7 @@ public class GameStage extends BasicStage {
         wall.setRotation(-10);
         addActor(wall);
         wall = new Wall();
-        wall.setPosition(new Vector2(400, -10));
+        wall.setPosition(new Vector2(400, -40));
         wall.setRotation(0);
         addActor(wall);
 
