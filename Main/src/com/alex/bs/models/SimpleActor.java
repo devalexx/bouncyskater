@@ -25,6 +25,7 @@ public abstract class SimpleActor extends Actor {
     protected Vector2 linVel = new Vector2();
     protected Sprite sprite;
     protected World physicsWorld;
+    protected Vector2 pos = new Vector2();
 
     final short CATEGORY_PLAYER = 0x0001;
     final short CATEGORY_SKATE = 0x0002;
@@ -43,14 +44,14 @@ public abstract class SimpleActor extends Actor {
 
     public void createPhysicsActor(World physicsWorld) {
         this.physicsWorld = physicsWorld;
-        body.setTransform(new Vector2(getX(), getY()).scl(GameStage.WORLD_TO_BOX), (float)Math.toRadians(getRotation()));
+        body.setTransform(pos.cpy().scl(GameStage.WORLD_TO_BOX), (float)Math.toRadians(getRotation()));
     }
 
     public void prepareActor() {}
 
     public void setRotation(float a, boolean applyToBody) {
         if(body != null && applyToBody)
-            body.setTransform(new Vector2(getX(), getY()).scl(GameStage.WORLD_TO_BOX), (float)Math.toRadians(a));
+            body.setTransform(pos.cpy().add(getWidth() / 2, getHeight() / 2).scl(GameStage.WORLD_TO_BOX), (float)Math.toRadians(a));
         super.setRotation(a);
     }
 
@@ -75,7 +76,8 @@ public abstract class SimpleActor extends Actor {
     public void setPosition(float x, float y, boolean applyToBody) {
         if(body != null && applyToBody)
             body.setTransform(new Vector2(x, y).scl(GameStage.WORLD_TO_BOX), body.getAngle());
-        super.setPosition(x, y);
+        pos.set(x - getWidth() / 2, y - getHeight() / 2);
+        super.setPosition(x - getWidth() / 2, y - getHeight() / 2);
     }
 
     public void setLinearVelocity(Vector2 vec) {
@@ -130,6 +132,7 @@ public abstract class SimpleActor extends Actor {
     public void setBodyBox(float width, float height) {
         setWidth(width);
         setHeight(height);
+        setOrigin(width / 2, height / 2);
     }
 
     public void setSpriteBox(float width, float height) {
@@ -157,5 +160,15 @@ public abstract class SimpleActor extends Actor {
 
     public Vector2 getPosition() {
         return new Vector2(getX(), getY());
+    }
+
+    @Override
+    public float getX() {
+        return super.getX() + getWidth() / 2;
+    }
+
+    @Override
+    public float getY() {
+        return super.getY() + getHeight() / 2;
     }
 }

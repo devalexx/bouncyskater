@@ -130,4 +130,14 @@ public class Skate extends SimpleActor {
         wheel.setRotation(rightWheelBody.getAngle());
         wheel.draw(batch);
     }
+
+    @Override
+    public void setPosition(float x, float y, boolean applyToBody) {
+        super.setPosition(x, y, applyToBody);
+
+        if(applyToBody) {
+            leftWheelBody.setTransform(new Vector2(-getWidth() / 3.5f, -getWidth() / 5).add(getWidth() / 2, getHeight() / 2).add(pos.x, pos.y).scl(GameStage.WORLD_TO_BOX), 0);
+            rightWheelBody.setTransform(new Vector2(getWidth() / 3.5f , -getWidth() / 5).add(getWidth() / 2, getHeight() / 2).add(pos.x, pos.y).scl(GameStage.WORLD_TO_BOX), 0);
+        }
+    }
 }

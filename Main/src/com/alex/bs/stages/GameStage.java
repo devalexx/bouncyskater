@@ -13,27 +13,29 @@
  ******************************************************************************/
 package com.alex.bs.stages;
 
-import com.alex.bs.models.Wall;
 import com.alex.bs.models.Player;
-import com.alex.bs.models.SimpleActor;
 import com.alex.bs.models.Skate;
+import com.alex.bs.models.Wall;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Action;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import org.luaj.vm2.*;
-import org.luaj.vm2.lib.jse.*;
+import org.luaj.vm2.Globals;
+import org.luaj.vm2.LuaClosure;
+import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.Prototype;
+import org.luaj.vm2.lib.jse.CoerceJavaToLua;
+import org.luaj.vm2.lib.jse.JsePlatform;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class GameStage extends BasicStage {
     private Skate skate;
     private Player player;
     private Action leftAction, rightAction;
-    private boolean canJump, wonGame;
+    private boolean wonGame;
     private LuaFunction onCreateLuaFunc, onCheckLuaFunc;
 
     public GameStage(float width, float height) {
@@ -93,8 +95,6 @@ public class GameStage extends BasicStage {
 
         super.act(delta);
 
-        canJump = player.isPlayerGrounded(); // hack: set friction (todo: remove)
-
         if(onCheckLuaFunc.call().toboolean(1) && !wonGame)
             wonGame = true;
     }
@@ -109,7 +109,7 @@ public class GameStage extends BasicStage {
                     player.attachSkate(skate);
                 break;
             case Input.Keys.UP:
-                if(player.standUp() && canJump)
+                if(player.standUp() && player.isPlayerGrounded())
                     player.applyForceToCenter(new Vector2(0, 30));
                 break;
         }

@@ -14,17 +14,25 @@
 package com.alex.bs.screens;
 
 import com.alex.bs.BSGame;
-import com.alex.bs.stages.*;
-import com.badlogic.gdx.*;
-import com.badlogic.gdx.graphics.*;
+import com.alex.bs.stages.BasicStage;
+import com.alex.bs.stages.GameStage;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 public abstract  class BasicScreen implements Screen {
     protected Stage stage;
     protected Camera camera;
     protected BSGame game;
+    private ShapeRenderer shapeRenderer = new ShapeRenderer();
 
     public BasicScreen(BSGame game, Stage stage) {
         this.game = game;
@@ -47,6 +55,18 @@ public abstract  class BasicScreen implements Screen {
 
                 Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
                 debugRenderer.render(basicStage.getPhysicsWorld(), debugMatrix);
+
+                shapeRenderer.setColor(Color.BLUE);
+                shapeRenderer.setProjectionMatrix(stage.getCamera().combined);
+                shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+                for(Actor a : stage.getRoot().getChildren()) {
+                    shapeRenderer.identity();
+                    //shapeRenderer.translate(-a.getWidth() / 2, -a.getHeight() / 2, 0);
+                    shapeRenderer.translate(a.getX(), a.getY(), 0);
+                    shapeRenderer.rotate(0, 0, 1, a.getRotation());
+                    shapeRenderer.rect(-a.getWidth() / 2, -a.getHeight() / 2, a.getWidth(), a.getHeight());
+                }
+                shapeRenderer.end();
             }
         }
     }

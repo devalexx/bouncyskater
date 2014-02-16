@@ -13,32 +13,31 @@
  ******************************************************************************/
 package com.alex.bs.stages;
 
-import com.alex.bs.models.*;
-import com.badlogic.gdx.*;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.*;
+import com.alex.bs.models.Player;
+import com.alex.bs.models.Skate;
+import com.alex.bs.models.Wall;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.*;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
-import org.luaj.vm2.*;
-import org.luaj.vm2.lib.jse.*;
-
-import java.io.*;
 
 public class EditorStage extends BasicStage {
     private Vector2 moveScreen, moveActor, nowScreen, nowActor;
     private float screenScaleX, screenScaleY;
     private boolean enablePhysics;
     private Actor selectedActor;
-    private ShapeRenderer shapeRenderer = new ShapeRenderer();
+    private Player player;
+    private Skate skate;
 
     public EditorStage(float width, float height) {
         super(width, height, true);
 
         physicsWorld = new World(new Vector2(0, -9.8f), true);
 
-        Skate skate = new Skate();
+        skate = new Skate();
         addActor(skate);
 
         Wall wall = new Wall();
@@ -53,7 +52,7 @@ public class EditorStage extends BasicStage {
         wall.setRotation(0);
         addActor(wall);
 
-        Player player = new Player();
+        player = new Player();
         player.setPosition(new Vector2(100, 50));
         addActor(player);
 
@@ -81,17 +80,6 @@ public class EditorStage extends BasicStage {
         getCamera().update();
         getSpriteBatch().setProjectionMatrix(getCamera().projection);
 
-        shapeRenderer.setColor(Color.BLUE);
-        shapeRenderer.setProjectionMatrix(getCamera().combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        for(Actor a : getRoot().getChildren()) {
-            //shapeRenderer.rotate(0.f, 0.f, 1.f, a.getRotation());
-            shapeRenderer.identity();
-            //shapeRenderer.rotate(0, 0, 1, 90);
-            shapeRenderer.rect(a.getX(), a.getY(), a.getWidth(), a.getHeight());
-        }
-        shapeRenderer.end();
-
         if(enablePhysics) {
             physicsWorld.step(1 / 60f, 8, 3);
         }
@@ -105,8 +93,19 @@ public class EditorStage extends BasicStage {
     @Override
     public boolean keyDown(int keyCode) {
         switch(keyCode) {
-            case Input.Keys.SPACE:
+            case Input.Keys.P:
                 enablePhysics = !enablePhysics;
+                break;
+            case Input.Keys.SPACE:
+                if(player!=null)
+                    if(player.isSkateAttached())
+                        player.detachSkate();
+                    else
+                        player.attachSkate(skate);
+                break;
+            case Input.Keys.UP:
+                if(player != null && player.standUp() && player.isPlayerGrounded())
+                    player.applyForceToCenter(new Vector2(0, 30));
                 break;
         }
 
