@@ -14,6 +14,7 @@
 package com.alex.bs.ui;
 
 import com.alex.bs.managers.ResourceManager;
+import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 
 public class EditorUI extends Table {
@@ -29,34 +30,59 @@ public class EditorUI extends Table {
         Table tableBottom = createConsoleTable();
 
         Table topPanes = new Table();
-        SplitPane leftSplitPane = new SplitPane(tableLeft, new Table(), false, skin.get("default-horizontal", SplitPane.SplitPaneStyle.class));
+        Table emptyTableLeft = new Table();
+        Table emptyTableRight = new Table();
+        SplitPane leftSplitPane = new SplitPane(tableLeft, emptyTableLeft, false, skin.get("default-horizontal", SplitPane.SplitPaneStyle.class)) {
+            @Override
+            public Actor hit(float x, float y, boolean touchable) {
+                if(x > getWidth() * getSplit() + getStyle().handle.getMinWidth())
+                    return null;
+                return super.hit(x, y, touchable);
+            }
+        };
         leftSplitPane.setSplitAmount(0.4f);
-        SplitPane rightSplitPane = new SplitPane(new Table(), tableRight, false, skin.get("default-horizontal", SplitPane.SplitPaneStyle.class));
+        SplitPane rightSplitPane = new SplitPane(emptyTableRight, tableRight, false, skin.get("default-horizontal", SplitPane.SplitPaneStyle.class)) {
+            @Override
+            public Actor hit(float x, float y, boolean touchable) {
+                if(x < getWidth() * getSplit() - getStyle().handle.getMinWidth())
+                    return null;
+                return super.hit(x, y, touchable);
+            }
+        };
         rightSplitPane.setSplitAmount(0.7f);
         topPanes.add(leftSplitPane).fill().expand();
         topPanes.add(rightSplitPane).fill().expand();
-        topPanes.debug();
 
-        SplitPane downSplitPane = new SplitPane(topPanes, tableBottom, true, skin.get("default-vertical", SplitPane.SplitPaneStyle.class));
+        SplitPane downSplitPane = new SplitPane(topPanes, tableBottom, true, skin.get("default-vertical", SplitPane.SplitPaneStyle.class)) {
+            @Override
+            public Actor hit(float x, float y, boolean touchable) {
+                if(y > getHeight() * (1 - getSplit()) + getStyle().handle.getMinHeight())
+                    return null;
+                return super.hit(x, y, touchable);
+            }
+        };
         downSplitPane.setSplitAmount(0.7f);
         add(downSplitPane).fill().expand();
-
-        /*TextButton startGameButton = new TextButton("Menu", skin.get(TextButton.TextButtonStyle.class));
-        add(startGameButton);
-        startGameButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new MenuScreen(game));
-            }
-        });*/
     }
 
     private Table createMenuTable() {
-        return new Table();
+        Table table = new Table();
+        table.add(new ScrollPane(
+                new Label("qwe\nqwe\nqwe\nqwe\nqwe\nqwe\nqwe\n", skin.get(Label.LabelStyle.class)),
+                skin.get(ScrollPane.ScrollPaneStyle.class)
+        )).fill().expand();
+
+        return table;
     }
 
     private Table createPropertiesTable() {
-        return new Table();
+        Table table = new Table();
+        table.add(new ScrollPane(
+                new Label("qwe\nqwe\nqwe\nqwe\nqwe\nqwe\nqwe\n", skin.get(Label.LabelStyle.class)),
+                skin.get(ScrollPane.ScrollPaneStyle.class)
+        )).fill().expand();
+
+        return table;
     }
 
     private Table createConsoleTable() {
@@ -67,5 +93,10 @@ public class EditorUI extends Table {
         )).fill().expand();
 
         return table;
+    }
+
+    @Override
+    public Actor hit(float x, float y, boolean touchable) {
+        return super.hit(x, y, touchable);
     }
 }
