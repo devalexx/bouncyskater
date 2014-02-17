@@ -26,7 +26,7 @@ public class EditorUI extends Table {
     private Stage stage;
     private EditorManager editorManager;
     private Actor selectedActor;
-    private TextField posTextField, sizeTextField, nameTextField;
+    private TextField posTextField, sizeTextField, nameTextField, angleTextField;
     private Label cursorPosValueLabel;
 
     public EditorUI(Stage stage, EditorManager editorManager) {
@@ -114,6 +114,14 @@ public class EditorUI extends Table {
 
         paneTable.row();
 
+        Label abgleLabel = new Label("Angle:", skin.get(Label.LabelStyle.class));
+        paneTable.add(abgleLabel);
+
+        angleTextField = new TextField("-", skin.get(TextField.TextFieldStyle.class));
+        paneTable.add(angleTextField);
+
+        paneTable.row();
+
         TextButton updatePropButton = new TextButton("Update", skin.get(TextButton.TextButtonStyle.class));
         updatePropButton.addListener(new ClickListener(0) {
             @Override
@@ -184,6 +192,13 @@ public class EditorUI extends Table {
             title = "-,-";
 
         sizeTextField.setText(title);
+
+        if(selectedActor != null)
+            title = String.valueOf(selectedActor.getRotation());
+        else
+            title = "-";
+
+        angleTextField.setText(title);
     }
 
     private void updateSelectedActor() {
@@ -202,6 +217,9 @@ public class EditorUI extends Table {
             v = new Vector2(Float.valueOf(text.substring(0, text.indexOf(","))),
                     Float.valueOf(text.substring(text.indexOf(",") + 1)));
             selectedActor.setSize(v.x, v.y);
+
+            text = angleTextField.getText();
+            selectedActor.setRotation(Float.valueOf(text));
         } catch (NumberFormatException e) {
 
         }
