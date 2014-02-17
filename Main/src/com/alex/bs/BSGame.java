@@ -13,7 +13,7 @@
  ******************************************************************************/
 package com.alex.bs;
 
-import com.alex.bs.managers.TextureManager;
+import com.alex.bs.managers.ResourceManager;
 import com.alex.bs.screens.EditorScreen;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -21,7 +21,7 @@ import com.badlogic.gdx.Gdx;
 public class BSGame extends Game {
     @Override
     public void create() {
-        TextureManager.getInstance().getAtlas("images/pack.atlas");
+        ResourceManager.getInstance().getAtlas("images/pack.atlas");
 
         //setScreen(new GameScreen(this));
         setScreen(new EditorScreen(this));
