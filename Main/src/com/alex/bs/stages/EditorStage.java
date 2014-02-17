@@ -44,22 +44,23 @@ public class EditorStage extends BasicStage {
         physicsWorld = new World(new Vector2(0, -9.8f), true);
 
         skate = new Skate();
+        skate.setPosition(new Vector2(300, 250));
         addActor(skate);
 
         Wall wall = new Wall();
-        wall.setPosition(new Vector2(0, -50));
+        wall.setPosition(new Vector2(300, 150));
         addActor(wall);
         wall = new Wall();
-        wall.setPosition(new Vector2(-200, -50));
+        wall.setPosition(new Vector2(100, 150));
         wall.setRotation(-10);
         addActor(wall);
         wall = new Wall();
-        wall.setPosition(new Vector2(400, -40));
+        wall.setPosition(new Vector2(700, 160));
         wall.setRotation(0);
         addActor(wall);
 
         player = new Player();
-        player.setPosition(new Vector2(100, 50));
+        player.setPosition(new Vector2(400, 250));
         addActor(player);
 
         getCamera().position.set(0, 0, 0f);
