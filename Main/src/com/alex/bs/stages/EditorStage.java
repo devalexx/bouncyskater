@@ -13,22 +13,21 @@
  ******************************************************************************/
 package com.alex.bs.stages;
 
-import com.alex.bs.models.Player;
-import com.alex.bs.models.Skate;
-import com.alex.bs.models.Wall;
+import com.alex.bs.managers.EditorManager;
+import com.alex.bs.models.*;
 import com.alex.bs.ui.EditorUI;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 
 public class EditorStage extends BasicStage {
+    private final EditorManager editorManager;
     private EditorUI editorUI;
     private Vector2 moveScreen, moveActor, nowScreen, nowActor;
     private float screenScaleX, screenScaleY;
@@ -65,7 +64,9 @@ public class EditorStage extends BasicStage {
 
         getCamera().position.set(0, 0, 0f);
 
-        editorUI = new EditorUI();
+        editorManager = new EditorManager(this);
+        editorUI = new EditorUI(this, editorManager);
+        editorManager.setEditorUI(editorUI);
         editorUI.setFillParent(true);
         editorUI.debug();
         addActor(editorUI);
@@ -79,6 +80,7 @@ public class EditorStage extends BasicStage {
                 public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                     if(button == 0) {
                         selectedActor = event.getTarget();
+                        editorManager.setSelectedActor((SimpleActor) selectedActor);
                     }
                     return super.touchDown(event, x, y, pointer, button);
                 }
@@ -159,12 +161,23 @@ public class EditorStage extends BasicStage {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         boolean result = super.touchDown(screenX, screenY, pointer, button);
 
-        if(button == 1) {
-            moveScreen = new Vector2(-screenX * screenScaleX, screenY * screenScaleY);
-            nowScreen = new Vector2(getCamera().position.x, getCamera().position.y);
-        } else if(button == 0 && selectedActor != null) {
-            moveActor = new Vector2(screenX * screenScaleX, -screenY * screenScaleY);
-            nowActor = new Vector2(selectedActor.getX(), selectedActor.getY());
+        if(editorUI.hit(screenX, screenY, true) == null) {
+            if(button == 1) {
+                moveScreen = new Vector2(-screenX * screenScaleX, screenY * screenScaleY);
+                nowScreen = new Vector2(getCamera().position.x, getCamera().position.y);
+            } else if(button == 0 && selectedActor != null) {
+                Vector2 pos = screenToStageCoordinates(new Vector2(screenX, screenY))
+                        .sub(selectedActor.getX(), selectedActor.getY())
+                        .add(selectedActor.getWidth() / 2, selectedActor.getHeight() / 2);
+                Actor actor = selectedActor.hit(pos.x, pos.y, true);
+                if(selectedActor != null && actor != null && actor.equals(selectedActor)) {
+                    moveActor = new Vector2(screenX * screenScaleX, -screenY * screenScaleY);
+                    nowActor = new Vector2(selectedActor.getX(), selectedActor.getY());
+                } else {
+                    selectedActor = null;
+                    editorManager.setSelectedActor((SimpleActor) selectedActor);
+                }
+            }
         }
 
         return result;
@@ -195,7 +208,7 @@ public class EditorStage extends BasicStage {
         } else if(button == 0 && moveActor != null) {
             moveActor = null;
             nowActor = null;
-            selectedActor = null;
+            //selectedActor = null;
         }
 
         return super.touchUp(screenX, screenY, pointer, button);
@@ -207,5 +220,12 @@ public class EditorStage extends BasicStage {
         getCamera().viewportHeight = getCamera().viewportHeight * (amount < 0 ? 0.5f : 2);
 
         return super.scrolled(amount);
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        editorUI.setCursorPositionValue(screenToStageCoordinates(new Vector2(screenX, screenY)));
+
+        return super.mouseMoved(screenX, screenY);
     }
 }
