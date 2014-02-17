@@ -107,6 +107,8 @@ public class Skate extends SimpleActor {
         polygonShape.dispose();
 
         super.createPhysicsActor(physicsWorld);
+        leftWheelBody.setTransform(new Vector2(-getWidth() / 1.3f, -getWidth() / 4).add(getWidth() / 2, getHeight() / 2).add(pos.x, pos.y).scl(GameStage.WORLD_TO_BOX), 0);
+        rightWheelBody.setTransform(new Vector2(-getWidth() / 4.3f , -getWidth() / 4).add(getWidth() / 2, getHeight() / 2).add(pos.x, pos.y).scl(GameStage.WORLD_TO_BOX), 0);
     }
 
     public void roll(float force) {
@@ -135,7 +137,7 @@ public class Skate extends SimpleActor {
     public void setPosition(float x, float y, boolean applyToBody) {
         super.setPosition(x, y, applyToBody);
 
-        if(applyToBody) {
+        if(applyToBody && body != null) {
             leftWheelBody.setTransform(new Vector2(-getWidth() / 3.5f, -getWidth() / 5).add(getWidth() / 2, getHeight() / 2).add(pos.x, pos.y).scl(GameStage.WORLD_TO_BOX), 0);
             rightWheelBody.setTransform(new Vector2(getWidth() / 3.5f , -getWidth() / 5).add(getWidth() / 2, getHeight() / 2).add(pos.x, pos.y).scl(GameStage.WORLD_TO_BOX), 0);
         }
