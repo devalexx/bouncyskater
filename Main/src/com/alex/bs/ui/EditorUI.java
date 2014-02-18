@@ -35,9 +35,7 @@ public class EditorUI extends Table {
         this.editorManager = editorManager;
 
         Table tableLeft = createMenuTable();
-
         Table tableRight = createPropertiesTable();
-
         Table tableBottom = createConsoleTable();
 
         Table topPanes = new Table();
@@ -54,6 +52,7 @@ public class EditorUI extends Table {
         SplitPane downSplitPane = new SplitPane(topPanes, tableBottom, true, skin.get("default-vertical", SplitPane.SplitPaneStyle.class)) {
             @Override
             public Actor hit(float x, float y, boolean touchable) {
+                // Disable hit on empty area
                 if(y > getHeight() * (1 - getSplit()) + getStyle().handle.getMinHeight() &&
                         x > leftSplitPane.getWidth() * leftSplitPane.getSplit() + leftSplitPane.getStyle().handle.getMinWidth() &&
                         x - leftSplitPane.getWidth() < rightSplitPane.getWidth() * rightSplitPane.getSplit() - rightSplitPane.getStyle().handle.getMinWidth())

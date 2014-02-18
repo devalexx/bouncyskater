@@ -18,6 +18,8 @@ import com.alex.bs.models.*;
 import com.alex.bs.ui.EditorUI;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
@@ -35,10 +37,12 @@ public class EditorStage extends BasicStage {
     private Actor selectedActor;
     private Player player;
     private Skate skate;
+    private ShapeRenderer shapeRenderer = new ShapeRenderer();
 
     public EditorStage(float width, float height) {
         super(width, height, true);
         setViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        shapeRenderer.setColor(Color.ORANGE);
 
         physicsWorld = new World(new Vector2(0, -9.8f), true);
 
@@ -91,6 +95,21 @@ public class EditorStage extends BasicStage {
 
     @Override
     public void draw() {
+        if(selectedActor != null) {
+            Gdx.gl.glLineWidth(3);
+            shapeRenderer.setProjectionMatrix(getCamera().combined);
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+
+            shapeRenderer.identity();
+            shapeRenderer.translate(selectedActor.getX(), selectedActor.getY(), 0);
+            shapeRenderer.rotate(0, 0, 1, selectedActor.getRotation());
+            shapeRenderer.rect(-selectedActor.getWidth() / 2, -selectedActor.getHeight() / 2,
+                    selectedActor.getWidth(), selectedActor.getHeight());
+
+            shapeRenderer.end();
+            Gdx.gl.glLineWidth(1);
+        }
+
         editorUI.setVisible(false);
         super.draw();
         editorUI.setVisible(true);
@@ -161,7 +180,7 @@ public class EditorStage extends BasicStage {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         boolean result = super.touchDown(screenX, screenY, pointer, button);
 
-        if(editorUI.hit(screenX, screenY, true) == null) {
+        if(editorUI.hit(screenX, Gdx.graphics.getHeight() - screenY, true) == null) {
             if(button == 1) {
                 moveScreen = new Vector2(-screenX * screenScaleX, screenY * screenScaleY);
                 nowScreen = new Vector2(getCamera().position.x, getCamera().position.y);
