@@ -24,14 +24,14 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.*;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 
 public class EditorStage extends BasicStage {
     private final EditorManager editorManager;
     private EditorUI editorUI;
-    private Vector2 moveScreen, moveActor, nowScreen, nowActor;
+    private Vector2 moveScreen, moveActor, nowScreen, nowActorPos, rotateActor;
+    private Float nowActorRot;
     private float screenScaleX, screenScaleY;
     private boolean enablePhysics;
     private Actor selectedActor;
@@ -158,7 +158,7 @@ public class EditorStage extends BasicStage {
     public boolean keyDown(int keyCode) {
         switch(keyCode) {
             case Input.Keys.P:
-                enablePhysics = !enablePhysics;
+                togglePhysics();
                 break;
             case Input.Keys.SPACE:
                 if(player!=null)
@@ -185,17 +185,16 @@ public class EditorStage extends BasicStage {
                 moveScreen = new Vector2(-screenX * screenScaleX, screenY * screenScaleY);
                 nowScreen = new Vector2(getCamera().position.x, getCamera().position.y);
             } else if(button == 0 && selectedActor != null) {
-                Vector2 pos = screenToStageCoordinates(new Vector2(screenX, screenY))
-                        .sub(selectedActor.getX(), selectedActor.getY())
-                        .add(selectedActor.getWidth() / 2, selectedActor.getHeight() / 2);
-                Actor actor = selectedActor.hit(pos.x, pos.y, true);
-                if(selectedActor != null && actor != null && actor.equals(selectedActor)) {
+                if(result) {
                     moveActor = new Vector2(screenX * screenScaleX, -screenY * screenScaleY);
-                    nowActor = new Vector2(selectedActor.getX(), selectedActor.getY());
+                    nowActorPos = new Vector2(selectedActor.getX(), selectedActor.getY());
                 } else {
                     selectedActor = null;
                     editorManager.setSelectedActor((SimpleActor) selectedActor);
                 }
+            } else if(button == 2 && selectedActor != null) {
+                nowActorRot = selectedActor.getRotation();
+                rotateActor = new Vector2(screenX, screenY);
             }
         }
 
@@ -211,9 +210,14 @@ public class EditorStage extends BasicStage {
         }
 
         if(moveActor != null) {
-            Vector2 pos = nowActor.cpy().add(
+            Vector2 pos = nowActorPos.cpy().add(
                     new Vector2(screenX * screenScaleX, -screenY * screenScaleY).sub(moveActor));
             selectedActor.setPosition(pos.x, pos.y);
+        }
+
+        if(rotateActor != null) {
+            Vector2 pos = rotateActor.cpy().sub(new Vector2(screenX, screenY));
+            selectedActor.setRotation(nowActorRot + pos.y);
         }
 
         return super.touchDragged(screenX, screenY, pointer);
@@ -226,8 +230,9 @@ public class EditorStage extends BasicStage {
             nowScreen = null;
         } else if(button == 0 && moveActor != null) {
             moveActor = null;
-            nowActor = null;
-            //selectedActor = null;
+            nowActorPos = null;
+        } else if(button == 2 && rotateActor != null) {
+            rotateActor = null;
         }
 
         return super.touchUp(screenX, screenY, pointer, button);
@@ -246,5 +251,10 @@ public class EditorStage extends BasicStage {
         editorUI.setCursorPositionValue(screenToStageCoordinates(new Vector2(screenX, screenY)));
 
         return super.mouseMoved(screenX, screenY);
+    }
+
+    public void togglePhysics() {
+        physicsWorld.clearForces();
+        enablePhysics = !enablePhysics;
     }
 }

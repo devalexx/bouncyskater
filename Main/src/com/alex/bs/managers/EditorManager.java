@@ -16,8 +16,13 @@ package com.alex.bs.managers;
 import com.alex.bs.models.*;
 import com.alex.bs.ui.EditorUI;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.*;
+import org.luaj.vm2.*;
+import org.luaj.vm2.lib.jse.*;
+
+import java.io.*;
 
 public class EditorManager {
     private Stage stage;
@@ -51,5 +56,41 @@ public class EditorManager {
     public void setSelectedActor(SimpleActor selectedActor) {
         this.selectedActor = selectedActor;
         editorUI.setSelectedActor(selectedActor);
+    }
+
+    public void save(String text) {
+        FileHandle file = Gdx.files.local("data/levels/editor/" + text);
+        file.writeString(new ExportManager(stage).export(), false);
+    }
+
+    public boolean load(String text) {
+        FileHandle file = Gdx.files.local("data/levels/editor/" + text);
+        if(!file.exists())
+            return false;
+
+        InputStream streamInit = Gdx.files.internal("data/levels/init.lua").read();
+        InputStream streamLevel = Gdx.files.internal("data/levels/test.lua").read();
+        Globals globals = JsePlatform.standardGlobals();
+        Prototype prototype;
+        try {
+            prototype = globals.loadPrototype(streamInit, "init_script", "t");
+            LuaClosure closure = new LuaClosure(prototype, globals);
+            closure.call();
+
+            prototype = globals.loadPrototype(streamLevel, "level_script", "t");
+            closure = new LuaClosure(prototype, globals);
+            closure.call();
+
+            globals.rawset("stage", CoerceJavaToLua.coerce(stage));
+            LuaFunction onCreateLuaFunc = (LuaFunction) globals.rawget("onCreate");
+            for(Actor a : stage.getRoot().getChildren())
+                if(a instanceof SimpleActor)
+                    stage.getRoot().removeActor(a);
+            onCreateLuaFunc.call();
+        } catch (IOException e) {
+            System.err.println(e);
+        }
+
+        return true;
     }
 }

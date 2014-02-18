@@ -15,7 +15,7 @@ package com.alex.bs.ui;
 
 import com.alex.bs.managers.*;
 import com.alex.bs.models.*;
-import com.alex.bs.stages.BasicStage;
+import com.alex.bs.stages.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.*;
@@ -24,13 +24,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.*;
 
 public class EditorUI extends Table {
     private Skin skin;
-    private BasicStage stage;
+    private EditorStage stage;
     private EditorManager editorManager;
     private Actor selectedActor;
     private TextField posTextField, sizeTextField, nameTextField, angleTextField;
     private Label cursorPosValueLabel;
 
-    public EditorUI(BasicStage stage, EditorManager editorManager) {
+    public EditorUI(EditorStage stage, EditorManager editorManager) {
         this.stage = stage;
         skin = ResourceManager.getInstance().getSkin();
         this.editorManager = editorManager;
@@ -91,6 +91,40 @@ public class EditorUI extends Table {
             }
         });
         paneTable.add(debugButton);
+
+        TextButton physicsButton = new TextButton("Physics", skin.get(TextButton.TextButtonStyle.class));
+        physicsButton.addListener(new ClickListener(0) {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                stage.togglePhysics();
+            }
+        });
+        paneTable.add(physicsButton);
+
+        paneTable.row();
+
+        final TextField filenameTextField = new TextField("temp.lua", skin);
+        paneTable.add(filenameTextField).colspan(2);
+
+        paneTable.row();
+
+        TextButton saveButton = new TextButton("Save", skin.get(TextButton.TextButtonStyle.class));
+        saveButton.addListener(new ClickListener(0) {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                editorManager.save(filenameTextField.getText());
+            }
+        });
+        paneTable.add(saveButton);
+
+        TextButton loadButton = new TextButton("Load", skin.get(TextButton.TextButtonStyle.class));
+        loadButton.addListener(new ClickListener(0) {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                editorManager.load(filenameTextField.getText());
+            }
+        });
+        paneTable.add(loadButton);
 
         return table;
     }
