@@ -19,6 +19,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.*;
+import com.badlogic.gdx.utils.SnapshotArray;
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.jse.*;
 
@@ -69,7 +70,7 @@ public class EditorManager {
             return false;
 
         InputStream streamInit = Gdx.files.internal("data/levels/init.lua").read();
-        InputStream streamLevel = Gdx.files.internal("data/levels/test.lua").read();
+        InputStream streamLevel = file.read();
         Globals globals = JsePlatform.standardGlobals();
         Prototype prototype;
         try {
@@ -83,9 +84,13 @@ public class EditorManager {
 
             globals.rawset("stage", CoerceJavaToLua.coerce(stage));
             LuaFunction onCreateLuaFunc = (LuaFunction) globals.rawget("onCreate");
-            for(Actor a : stage.getRoot().getChildren())
+
+            SnapshotArray<Actor> children = stage.getRoot().getChildren();
+            for(int i = children.size - 1; i >= 0; i--) {
+                Actor a = children.get(i);
                 if(a instanceof SimpleActor)
                     stage.getRoot().removeActor(a);
+            }
             onCreateLuaFunc.call();
         } catch (IOException e) {
             System.err.println(e);

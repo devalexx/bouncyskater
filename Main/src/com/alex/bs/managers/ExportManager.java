@@ -49,8 +49,7 @@ public class ExportManager {
         switch(sa.getType()) {
             case WALL:
                 s += "    obj = luajava.new(Wall)\n" +
-                        "    obj:setSpriteAndBodyBox(" + sa.getWidth() + ", " + sa.getHeight() + ")\n" +
-                        "    obj:setPosition(" + sa.getX() + ", " + sa.getY() + ")\n";
+                        "    obj:setSpriteAndBodyBox(" + sa.getWidth() + ", " + sa.getHeight() + ")\n";
                 break;
             case PLAYER:
                 s += "    obj = luajava.new(Player)\n" +
@@ -65,6 +64,8 @@ public class ExportManager {
         if(s.isEmpty())
             return "    --Error import " + sa + "\n\n";
         else {
+            s += "    obj:setPosition(" + (sa.getX() + sa.getWidth() / 2) + ", " +
+                    (sa.getY() + sa.getHeight() / 2) + ")\n";
             if(sa.getName() != null)
                 s += "    obj:setName('" + sa.getName() + "')\n\n";
             s += "    stage:addActor(obj)\n\n";
