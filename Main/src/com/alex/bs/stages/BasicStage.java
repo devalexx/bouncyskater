@@ -15,13 +15,8 @@ package com.alex.bs.stages;
 
 import com.alex.bs.models.*;
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.*;
-import org.luaj.vm2.*;
-import org.luaj.vm2.lib.jse.*;
-
-import java.io.*;
 
 public abstract class BasicStage extends Stage {
     public static final float WORLD_TO_BOX = 0.01f;
@@ -47,6 +42,10 @@ public abstract class BasicStage extends Stage {
 
     public boolean isDebug() {
         return debug;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
     }
 
     @Override
