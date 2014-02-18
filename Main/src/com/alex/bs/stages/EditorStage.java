@@ -125,8 +125,8 @@ public class EditorStage extends BasicStage {
         editorUI.setPosition(0, 0);
         editorUI.setScale(1, 1);
 
-        if(debug)
-            Table.drawDebug(this);
+        /*if(debug)
+            Table.drawDebug(this);*/
         getSpriteBatch().begin();
         editorUI.draw(getSpriteBatch(), 1);
         getSpriteBatch().end();
