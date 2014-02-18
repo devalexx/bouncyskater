@@ -15,6 +15,7 @@ package com.alex.bs.ui;
 
 import com.alex.bs.managers.*;
 import com.alex.bs.models.*;
+import com.alex.bs.stages.BasicStage;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.*;
@@ -23,13 +24,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.*;
 
 public class EditorUI extends Table {
     private Skin skin;
-    private Stage stage;
+    private BasicStage stage;
     private EditorManager editorManager;
     private Actor selectedActor;
     private TextField posTextField, sizeTextField, nameTextField, angleTextField;
     private Label cursorPosValueLabel;
 
-    public EditorUI(Stage stage, EditorManager editorManager) {
+    public EditorUI(BasicStage stage, EditorManager editorManager) {
         this.stage = stage;
         skin = ResourceManager.getInstance().getSkin();
         this.editorManager = editorManager;
@@ -69,6 +70,7 @@ public class EditorUI extends Table {
         Table paneTable = new Table();
         ScrollPane scrollPane = new ScrollPane(paneTable, skin.get(ScrollPane.ScrollPaneStyle.class));
         table.add(scrollPane).fill().expand();
+        paneTable.align(Align.top);
 
         TextButton addWallButton = new TextButton("Wall", skin.get(TextButton.TextButtonStyle.class));
         addWallButton.addListener(new ClickListener(0) {
@@ -78,6 +80,17 @@ public class EditorUI extends Table {
             }
         });
         paneTable.add(addWallButton);
+
+        paneTable.row();
+
+        TextButton debugButton = new TextButton("Debug", skin.get(TextButton.TextButtonStyle.class));
+        debugButton.addListener(new ClickListener(0) {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                stage.setDebug(!stage.isDebug());
+            }
+        });
+        paneTable.add(debugButton);
 
         return table;
     }
