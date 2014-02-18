@@ -45,7 +45,6 @@ public abstract  class BasicScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act(delta);
-        stage.draw();
 
         if(stage instanceof BasicStage) {
             BasicStage basicStage = (BasicStage) stage;
@@ -70,6 +69,8 @@ public abstract  class BasicScreen implements Screen {
                 shapeRenderer.end();
             }
         }
+
+        stage.draw();
     }
 
     @Override
