@@ -52,12 +52,10 @@ public class ExportManager {
                         "    obj:setSpriteAndBodyBox(" + sa.getWidth() + ", " + sa.getHeight() + ")\n";
                 break;
             case PLAYER:
-                s += "    obj = luajava.new(Player)\n" +
-                        "    obj:setPosition(" + sa.getX() + ", " + sa.getY() + ")\n";
+                s += "    obj = luajava.new(Player)\n";
                 break;
             case SKATE:
-                s += "    obj = luajava.new(Skate)\n" +
-                        "    obj:setPosition(" + sa.getX() + ", " + sa.getY() + ")\n";
+                s += "    obj = luajava.new(Skate)\n";
                 break;
         }
 
