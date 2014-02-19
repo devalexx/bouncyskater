@@ -15,7 +15,8 @@ package com.alex.bs.stages;
 
 import com.alex.bs.models.*;
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.*;
 
 public abstract class BasicStage extends Stage {
@@ -23,6 +24,7 @@ public abstract class BasicStage extends Stage {
     public static final float BOX_TO_WORLD = 1 / WORLD_TO_BOX;
     protected World physicsWorld;
     protected boolean debug;
+    protected Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
 
     protected BasicStage(float width, float height, boolean keepAspectRatio) {
         super(width, height, keepAspectRatio);
@@ -57,5 +59,14 @@ public abstract class BasicStage extends Stage {
         }
 
         return super.keyDown(keyCode);
+    }
+
+    protected void drawDebug() {
+        if(!debug)
+            return;
+
+        Matrix4 debugMatrix = new Matrix4(getCamera().combined);
+        debugMatrix.scl(GameStage.BOX_TO_WORLD);
+        debugRenderer.render(physicsWorld, debugMatrix);
     }
 }

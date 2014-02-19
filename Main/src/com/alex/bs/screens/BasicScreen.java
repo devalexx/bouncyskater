@@ -49,12 +49,6 @@ public abstract  class BasicScreen implements Screen {
         if(stage instanceof BasicStage) {
             BasicStage basicStage = (BasicStage) stage;
             if(basicStage.isDebug()) {
-                Matrix4 debugMatrix = new Matrix4(camera.combined);
-                debugMatrix.scl(GameStage.BOX_TO_WORLD);
-
-                Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
-                debugRenderer.render(basicStage.getPhysicsWorld(), debugMatrix);
-
                 shapeRenderer.setColor(Color.BLUE);
                 shapeRenderer.setProjectionMatrix(stage.getCamera().combined);
                 shapeRenderer.begin(ShapeRenderer.ShapeType.Line);

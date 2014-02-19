@@ -20,9 +20,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
@@ -68,12 +67,19 @@ public class EditorStage extends BasicStage {
 
         getCamera().position.set(0, 0, 0f);
 
-        editorManager = new EditorManager(this);
+        editorManager = new EditorManager(this, shapeRenderer);
         editorUI = new EditorUI(this, editorManager);
         editorManager.setEditorUI(editorUI);
         editorUI.setFillParent(true);
         editorUI.debug();
         addActor(editorUI);
+
+        Mesh mesh = new Mesh();
+        mesh.addVertex(-10, -10);
+        mesh.addVertex(10, -10);
+        mesh.addVertex(10, 10);
+        mesh.addVertex(-10, 10);
+        addActor(mesh);
     }
 
     @Override
@@ -95,16 +101,21 @@ public class EditorStage extends BasicStage {
 
     @Override
     public void draw() {
-        if(selectedActor != null) {
+        if(selectedActor != null || editorManager.hasCreatingObject()) {
             Gdx.gl.glLineWidth(3);
             shapeRenderer.setProjectionMatrix(getCamera().combined);
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
-            shapeRenderer.identity();
-            shapeRenderer.translate(selectedActor.getX(), selectedActor.getY(), 0);
-            shapeRenderer.rotate(0, 0, 1, selectedActor.getRotation());
-            shapeRenderer.rect(-selectedActor.getWidth() / 2, -selectedActor.getHeight() / 2,
-                    selectedActor.getWidth(), selectedActor.getHeight());
+            if(selectedActor != null) {
+                shapeRenderer.identity();
+                shapeRenderer.translate(selectedActor.getX(), selectedActor.getY(), 0);
+                shapeRenderer.rotate(0, 0, 1, selectedActor.getRotation());
+                shapeRenderer.rect(-selectedActor.getWidth() / 2, -selectedActor.getHeight() / 2,
+                        selectedActor.getWidth(), selectedActor.getHeight());
+            }
+
+            if(editorManager.hasCreatingObject())
+                editorManager.draw();
 
             shapeRenderer.end();
             Gdx.gl.glLineWidth(1);
@@ -113,6 +124,7 @@ public class EditorStage extends BasicStage {
         editorUI.setVisible(false);
         super.draw();
         editorUI.setVisible(true);
+        drawDebug();
 
         Vector3 tmpScreenPos = getCamera().position.cpy();
         Vector2 tmpScreenSize = new Vector2(getCamera().viewportWidth, getCamera().viewportHeight);
@@ -180,7 +192,7 @@ public class EditorStage extends BasicStage {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         boolean result = super.touchDown(screenX, screenY, pointer, button);
 
-        if(editorUI.hit(screenX, Gdx.graphics.getHeight() - screenY, true) == null) {
+        if(!editorManager.hasCreatingObject() && editorUI.hit(screenX, Gdx.graphics.getHeight() - screenY, true) == null) {
             if(button == 1) {
                 moveScreen = new Vector2(-screenX * screenScaleX, screenY * screenScaleY);
                 nowScreen = new Vector2(getCamera().position.x, getCamera().position.y);
@@ -225,6 +237,8 @@ public class EditorStage extends BasicStage {
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        editorManager.touchUp(screenX, screenY, button);
+
         if(button == 1 && moveScreen != null) {
             moveScreen = null;
             nowScreen = null;

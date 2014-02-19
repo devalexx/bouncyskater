@@ -39,7 +39,8 @@ public abstract class SimpleActor extends Actor {
         NONE,
         WALL,
         SKATE,
-        PLAYER
+        PLAYER,
+        MESH
     }
 
     public void createPhysicsActor(World physicsWorld) {

@@ -13,10 +13,13 @@
  ******************************************************************************/
 package com.alex.bs.managers;
 
+import com.alex.bs.helper.Box2DSeparatorHelper;
 import com.alex.bs.models.*;
 import com.alex.bs.ui.EditorUI;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.utils.SnapshotArray;
@@ -24,15 +27,20 @@ import org.luaj.vm2.*;
 import org.luaj.vm2.lib.jse.*;
 
 import java.io.*;
+import java.util.*;
 
 public class EditorManager {
     private Stage stage;
     private int counter;
     private SimpleActor selectedActor;
     private EditorUI editorUI;
+    private SimpleActor.TYPE creatingObject = SimpleActor.TYPE.NONE;
+    private ShapeRenderer shapeRenderer;
+    private List<Vector2> vertices = new ArrayList<Vector2>();
 
-    public EditorManager(Stage stage) {
+    public EditorManager(Stage stage, ShapeRenderer shapeRenderer) {
         this.stage = stage;
+        this.shapeRenderer = shapeRenderer;
     }
 
     public void setEditorUI(EditorUI editorUI) {
@@ -97,5 +105,48 @@ public class EditorManager {
         }
 
         return true;
+    }
+
+    public void addMesh() {
+        creatingObject = SimpleActor.TYPE.MESH;
+    }
+
+    public void touchUp(int screenX, int screenY, int button) {
+        if(creatingObject == SimpleActor.TYPE.MESH) {
+            if(button == 0) {
+                Vector2 pos = stage.screenToStageCoordinates(new Vector2(screenX, screenY));
+                vertices.add(pos);
+            } else if(button == 2) {
+                Mesh mesh = new Mesh(vertices);
+                stage.addActor(mesh);
+                creatingObject = SimpleActor.TYPE.NONE;
+                vertices.clear();
+            } else {
+                if(vertices.size() == 0)
+                    creatingObject = SimpleActor.TYPE.NONE;
+                else
+                    vertices.remove(vertices.size() - 1);
+            }
+        }
+    }
+
+    public boolean hasCreatingObject() {
+        return creatingObject != SimpleActor.TYPE.NONE;
+    }
+
+    public void draw() {
+        shapeRenderer.identity();
+
+        /*Vector2 pos = stage.screenToStageCoordinates(new Vector2(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2));
+        shapeRenderer.translate(pos.x, pos.y, 0);*/
+        if(Box2DSeparatorHelper.Validate(vertices) == 0)
+            shapeRenderer.setColor(Color.GREEN);
+        else
+            shapeRenderer.setColor(Color.RED);
+        for(int i = 0; i < vertices.size(); i++) {
+            Vector2 v1 = vertices.get(i);
+            Vector2 v2 = i >= vertices.size() - 1 ? vertices.get(0) : vertices.get(i + 1);
+            shapeRenderer.line(v1.x, v1.y, v2.x, v2.y);
+        }
     }
 }

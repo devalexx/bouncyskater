@@ -83,6 +83,17 @@ public class EditorUI extends Table {
 
         paneTable.row();
 
+        TextButton addMeshButton = new TextButton("Mesh", skin.get(TextButton.TextButtonStyle.class));
+        addMeshButton.addListener(new ClickListener(0) {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                editorManager.addMesh();
+            }
+        });
+        paneTable.add(addMeshButton);
+
+        paneTable.row();
+
         TextButton debugButton = new TextButton("Debug", skin.get(TextButton.TextButtonStyle.class));
         debugButton.addListener(new ClickListener(0) {
             @Override
