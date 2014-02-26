@@ -16,11 +16,16 @@ package com.alex.bs.models;
 import com.alex.bs.helper.Box2DSeparatorHelper;
 import com.alex.bs.managers.ResourceManager;
 import com.alex.bs.stages.GameStage;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.math.EarClippingTriangulator;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.World;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Mesh extends SimpleActor {
     private List<Vector2> vertices = new ArrayList<Vector2>();
@@ -77,10 +82,11 @@ public class Mesh extends SimpleActor {
         for(int i = 0; i < vertices.size(); i++) {
             verticesFloat[i*2] = vertices.get(i).x + width / 2;
             verticesFloat[i*2+1] = vertices.get(i).y + height / 2;
-            verticesFloat[i*2] /= sprite.getRegionWidth();
         }
 
-        PolygonRegion polyReg = new PolygonRegion(ResourceManager.getInstance().getRegionFromDefaultAtlas("wall"), verticesFloat,
+        Texture texture = ResourceManager.getInstance().getTexture("images/wall.png");
+        texture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+        PolygonRegion polyReg = new PolygonRegion(new TextureRegion(texture, (int)width, (int)height), verticesFloat,
                 new EarClippingTriangulator().computeTriangles(verticesFloat).toArray());
 
         poly = new PolygonSprite(polyReg);
