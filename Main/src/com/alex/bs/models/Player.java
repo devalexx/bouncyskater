@@ -33,8 +33,9 @@ public class Player extends SimpleActor {
     public Player() {
         sprite = ResourceManager.getInstance().getSpriteFromDefaultAtlas("player");
         type = TYPE.PLAYER;
-        setBodyBox(20, 80);
+        setBodyBox(30, 90);
         setSpriteBox(30, 90);
+        physOffset.set(15, 50);
     }
 
     @Override
@@ -48,14 +49,14 @@ public class Player extends SimpleActor {
         body = physicsWorld.createBody(def);
 
         PolygonShape poly = new PolygonShape();
-        poly.setAsBox(getPhysicsWidth() / 2, getPhysicsHeight() / 2);
+        poly.setAsBox(getPhysicsWidth() / 2 * 0.66f, getPhysicsHeight() / 2 * 0.9f);
         playerPhysicsFixture = body.createFixture(poly, 1);
         playerPhysicsFixture.setFilterData(filter);
         poly.dispose();
 
         CircleShape circle = new CircleShape();
-        circle.setRadius(getPhysicsWidth() / 2);
-        circle.setPosition(new Vector2(0, -getPhysicsHeight() / 2));
+        circle.setRadius(getPhysicsWidth() / 2 * 0.66f);
+        circle.setPosition(new Vector2(0, -getPhysicsHeight() / 2 * 0.9f));
         playerSensorFixture = body.createFixture(circle, 0);
         playerSensorFixture.setFriction(100);
         playerSensorFixture.setFilterData(filter);
@@ -77,7 +78,7 @@ public class Player extends SimpleActor {
 
     @Override
     public void draw(SpriteBatch batch, float parentAlpha) {
-        sprite.setPosition(getX() - getWidth() / 1.3f, getY() - getHeight() / 1.6f);
+        sprite.setPosition(getX(), getY());
         sprite.setRotation(getRotation());
         sprite.draw(batch);
     }
@@ -149,7 +150,8 @@ public class Player extends SimpleActor {
 
     public void attachSkate(Skate skate) {
         if(standUp() && skateJoint == null && getPosition().dst(skate.getPosition()) < 50) {
-            setPosition(new Vector2(skate.getX(), skate.getY()).add(0, getHeight() / 1.8f));
+            setPosition(new Vector2(skate.getX() + skate.getWidth() / 2, skate.getY() + skate.getHeight() / 2)
+                    .sub(getWidth() / 2, 0));
             RevoluteJointDef jointDef = new RevoluteJointDef();
             jointDef.initialize(getBody(), skate.getBody(), getBody().getWorldCenter());
             skateJoint = physicsWorld.createJoint(jointDef);
@@ -183,7 +185,7 @@ public class Player extends SimpleActor {
         playerGrounded = checkPlayerGroundedAndHack();
 
         if(skateJoint != null &&
-                (skateJoint.getReactionForce(1 / 60f).len() > 0.003 ||
+                (skateJoint.getReactionForce(1 / 60f).len() > 0.005 ||
                         skate.getRotation() < -60 ||
                         skate.getRotation() > 60)) {
             fall();

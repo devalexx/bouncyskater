@@ -15,7 +15,8 @@ package com.alex.bs.models;
 
 import com.alex.bs.managers.ResourceManager;
 import com.alex.bs.stages.GameStage;
-import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
@@ -110,7 +111,7 @@ public class Skate extends SimpleActor {
 
     @Override
     public void draw(SpriteBatch batch, float parentAlpha) {
-        sprite.setPosition(getX() - sprite.getWidth() / 2, getY() - sprite.getHeight() / 1.5f);
+        sprite.setPosition(getX(), getY() - sprite.getHeight() / 2.0f);
         sprite.setRotation(getRotation());
         sprite.draw(batch);
 

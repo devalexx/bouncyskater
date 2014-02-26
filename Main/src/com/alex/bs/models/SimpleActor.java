@@ -26,6 +26,7 @@ public abstract class SimpleActor extends Actor {
     protected Sprite sprite;
     protected World physicsWorld;
     protected Vector2 pos = new Vector2();
+    protected Vector2 physOffset = new Vector2();
 
     final short CATEGORY_PLAYER = 0x0001;
     final short CATEGORY_SKATE = 0x0002;
@@ -48,11 +49,9 @@ public abstract class SimpleActor extends Actor {
         body.setTransform(pos.cpy().scl(GameStage.WORLD_TO_BOX), (float)Math.toRadians(getRotation()));
     }
 
-    public void prepareActor() {}
-
     public void setRotation(float a, boolean applyToBody) {
         if(body != null && applyToBody)
-            body.setTransform(pos.cpy().add(getWidth() / 2, getHeight() / 2).scl(GameStage.WORLD_TO_BOX), (float)Math.toRadians(a));
+            body.setTransform(body.getPosition(), (float)Math.toRadians(a));
         super.setRotation(a);
     }
 
@@ -76,9 +75,9 @@ public abstract class SimpleActor extends Actor {
 
     public void setPosition(float x, float y, boolean applyToBody) {
         if(body != null && applyToBody)
-            body.setTransform(new Vector2(x, y).scl(GameStage.WORLD_TO_BOX), body.getAngle());
-        pos.set(x - getWidth() / 2, y - getHeight() / 2);
-        super.setPosition(x - getWidth() / 2, y - getHeight() / 2);
+            body.setTransform(new Vector2(x, y).add(physOffset).scl(GameStage.WORLD_TO_BOX), body.getAngle());
+        pos.set(x, y);
+        super.setPosition(x, y);
     }
 
     public void setLinearVelocity(Vector2 vec) {
@@ -96,7 +95,7 @@ public abstract class SimpleActor extends Actor {
         Vector2 pos = body.getPosition();
         setRotation((float)Math.toDegrees(body.getAngle()), false);
         linVel = body.getLinearVelocity();
-        pos.scl(GameStage.BOX_TO_WORLD);
+        pos.scl(GameStage.BOX_TO_WORLD).sub(physOffset);
         linVel.scl(GameStage.BOX_TO_WORLD);
         setPosition(pos.x, pos.y, false);
     }
@@ -131,9 +130,9 @@ public abstract class SimpleActor extends Actor {
     }
 
     public void setBodyBox(float width, float height) {
-        setWidth(width);
-        setHeight(height);
+        setSize(width, height);
         setOrigin(width / 2, height / 2);
+        physOffset.set(width / 2, height / 2);
     }
 
     public void setSpriteBox(float width, float height) {
@@ -154,7 +153,7 @@ public abstract class SimpleActor extends Actor {
         if(sprite == null)
             return;
 
-        sprite.setPosition(getX() - sprite.getWidth() / 2, getY() - sprite.getHeight() / 2);
+        sprite.setPosition(getX() , getY());
         sprite.setRotation(getRotation());
         sprite.draw(batch);
     }
@@ -165,12 +164,12 @@ public abstract class SimpleActor extends Actor {
 
     @Override
     public float getX() {
-        return super.getX() + getWidth() / 2;
+        return super.getX();
     }
 
     @Override
     public float getY() {
-        return super.getY() + getHeight() / 2;
+        return super.getY();
     }
 
     public void dispose() {

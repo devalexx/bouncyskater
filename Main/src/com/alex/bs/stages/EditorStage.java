@@ -88,11 +88,13 @@ public class EditorStage extends BasicStage {
         if(selectedActor != null || editorManager.hasCreatingObject()) {
             Gdx.gl.glLineWidth(3);
             shapeRenderer.setProjectionMatrix(getCamera().combined);
+            shapeRenderer.setColor(Color.ORANGE);
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
             if(selectedActor != null) {
                 shapeRenderer.identity();
-                shapeRenderer.translate(selectedActor.getX(), selectedActor.getY(), 0);
+                shapeRenderer.translate(selectedActor.getX() + selectedActor.getWidth() / 2,
+                        selectedActor.getY() + selectedActor.getHeight() / 2, 0);
                 shapeRenderer.rotate(0, 0, 1, selectedActor.getRotation());
                 shapeRenderer.rect(-selectedActor.getWidth() / 2, -selectedActor.getHeight() / 2,
                         selectedActor.getWidth(), selectedActor.getHeight());
@@ -249,5 +251,9 @@ public class EditorStage extends BasicStage {
     public void togglePhysics() {
         physicsWorld.clearForces();
         enablePhysics = !enablePhysics;
+    }
+
+    public void setSelectedActor(SimpleActor selectedActor) {
+        this.selectedActor = selectedActor;
     }
 }
