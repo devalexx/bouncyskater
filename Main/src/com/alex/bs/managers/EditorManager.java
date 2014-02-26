@@ -48,18 +48,22 @@ public class EditorManager {
         this.editorUI = editorUI;
     }
 
-    public void addWall() {
+    public Wall addWall() {
         Wall wall = new Wall();
         moveToCenter(wall);
         wall.setName("wall_" + counter++);
         selectedActor = wall;
         editorUI.setSelectedActor(selectedActor);
+        stage.setSelectedActor(selectedActor);
         stage.addActor(wall);
+
+        return wall;
     }
 
     public void moveToCenter(SimpleActor actor) {
         Vector2 pos = stage.screenToStageCoordinates(
-                new Vector2(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2));
+                new Vector2(Gdx.graphics.getWidth() / 2 + actor.getWidth() / 2,
+                        Gdx.graphics.getHeight() / 2 - actor.getHeight() / 2));
         actor.setPosition(pos.x, pos.y);
     }
 
@@ -122,6 +126,10 @@ public class EditorManager {
                 stage.addActor(mesh);
                 creatingObject = SimpleActor.TYPE.NONE;
                 vertices.clear();
+                mesh.setName("mesh_" + counter++);
+                selectedActor = mesh;
+                editorUI.setSelectedActor(selectedActor);
+                stage.setSelectedActor(selectedActor);
             } else {
                 if(vertices.size() == 0)
                     creatingObject = SimpleActor.TYPE.NONE;
@@ -149,5 +157,29 @@ public class EditorManager {
             Vector2 v2 = i >= vertices.size() - 1 ? vertices.get(0) : vertices.get(i + 1);
             shapeRenderer.line(v1.x, v1.y, v2.x, v2.y);
         }
+    }
+
+    public Player addPlayer() {
+        Player player = new Player();
+        moveToCenter(player);
+        player.setName("player_" + counter++);
+        selectedActor = player;
+        editorUI.setSelectedActor(selectedActor);
+        stage.setSelectedActor(selectedActor);
+        stage.addActor(player);
+
+        return player;
+    }
+
+    public Skate addSkate() {
+        Skate skate = new Skate();
+        moveToCenter(skate);
+        skate.setName("skate_" + counter++);
+        selectedActor = skate;
+        editorUI.setSelectedActor(selectedActor);
+        stage.setSelectedActor(selectedActor);
+        stage.addActor(skate);
+
+        return skate;
     }
 }
