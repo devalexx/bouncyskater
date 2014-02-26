@@ -18,7 +18,7 @@ import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
+import com.badlogic.gdx.physics.box2d.joints.*;
 import com.badlogic.gdx.utils.Array;
 
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
@@ -152,7 +152,10 @@ public class Player extends SimpleActor {
             RevoluteJointDef jointDef = new RevoluteJointDef();
             jointDef.initialize(getBody(), skate.getBody(), getBody().getWorldCenter());
             skateJoint = physicsWorld.createJoint(jointDef);
+            ((RevoluteJoint)skateJoint).enableLimit(true);
+            ((RevoluteJoint)skateJoint).setLimits(0, 0);
             this.skate = skate;
+            getBody().setFixedRotation(false);
         }
     }
 
@@ -161,6 +164,10 @@ public class Player extends SimpleActor {
             physicsWorld.destroyJoint(skateJoint);
             skateJoint = null;
             this.skate = null;
+            if(standUp) {
+                getBody().setFixedRotation(true);
+                getBody().setTransform(getBody().getPosition(), 0);
+            }
         }
     }
 
