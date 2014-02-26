@@ -76,6 +76,7 @@ public class EditorStage extends BasicStage {
             });
         }
         super.addActor(actor);
+        editorUI.toFront();
     }
 
     @Override
