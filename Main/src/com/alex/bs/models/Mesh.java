@@ -16,13 +16,16 @@ package com.alex.bs.models;
 import com.alex.bs.helper.Box2DSeparatorHelper;
 import com.alex.bs.managers.ResourceManager;
 import com.alex.bs.stages.GameStage;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
 
 import java.util.*;
 
 public class Mesh extends SimpleActor {
     private List<Vector2> vertices = new ArrayList<Vector2>();
+    private static PolygonSpriteBatch polygonSpriteBatch = new PolygonSpriteBatch();
+    private PolygonSprite poly;
 
     public Mesh(List<Vector2> vertices) {
         this.vertices.addAll(vertices);
@@ -52,10 +55,12 @@ public class Mesh extends SimpleActor {
         }
         float width = Math.abs(right - left), height = Math.abs(top - bottom);
         Vector2 center = new Vector2(left + width / 2, bottom + height / 2);
-        setPosition(center);
         setSpriteAndBodyBox(width, height);
-        for(Vector2 v : vertices)
-            v.sub(center);
+        if(pos.x == 0 && pos.y == 0) {
+            setPosition(center);
+            for(Vector2 v : vertices)
+                v.sub(center);
+        }
 
         List<Vector2> tmpVertices = new ArrayList<Vector2>();
 
@@ -67,6 +72,20 @@ public class Mesh extends SimpleActor {
             System.err.println("Can't separate vertices: " + separatorHelper.Validate(tmpVertices));
             return;
         }
+
+        float verticesFloat[] = new float[2 * vertices.size()];
+        for(int i = 0; i < vertices.size(); i++) {
+            verticesFloat[i*2] = vertices.get(i).x + width / 2;
+            verticesFloat[i*2+1] = vertices.get(i).y + height / 2;
+            verticesFloat[i*2] /= sprite.getRegionWidth();
+        }
+
+        PolygonRegion polyReg = new PolygonRegion(ResourceManager.getInstance().getRegionFromDefaultAtlas("wall"), verticesFloat,
+                new EarClippingTriangulator().computeTriangles(verticesFloat).toArray());
+
+        poly = new PolygonSprite(polyReg);
+        poly.setSize(width, height);
+        poly.setOrigin(width / 2, height / 2);
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
@@ -85,5 +104,21 @@ public class Mesh extends SimpleActor {
 
     public void addVertex(float x, float y) {
         vertices.add(new Vector2(x, y));
+    }
+
+    public List<Vector2> getVertices() {
+        return vertices;
+    }
+
+    @Override
+    public void draw(SpriteBatch batch, float parentAlpha) {
+        batch.end();
+        polygonSpriteBatch.setProjectionMatrix(batch.getProjectionMatrix());
+        polygonSpriteBatch.begin();
+        poly.setPosition(pos.x, pos.y);
+        poly.setRotation(getRotation());
+        poly.draw(polygonSpriteBatch);
+        polygonSpriteBatch.end();
+        batch.begin();
     }
 }

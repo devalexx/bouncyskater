@@ -14,7 +14,8 @@
 package com.alex.bs.managers;
 
 
-import com.alex.bs.models.SimpleActor;
+import com.alex.bs.models.*;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.*;
 
 public class ExportManager {
@@ -56,6 +57,11 @@ public class ExportManager {
                 break;
             case SKATE:
                 s += "    obj = luajava.new(Skate)\n";
+                break;
+            case MESH:
+                s += "    obj = luajava.new(Mesh)\n";
+                for(Vector2 v : ((Mesh)sa).getVertices())
+                s += "    obj:addVertex(" + v.x + ", " + v.y + ")\n";
                 break;
         }
 
