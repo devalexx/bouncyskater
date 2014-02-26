@@ -107,6 +107,7 @@ public class Player extends SimpleActor {
             return true;
 
         if(canStandUp) {
+            setPosition(getX(), getY() + (getHeight() / 2) - (float) Math.cos(Math.toRadians(getRotation())) * getHeight() / 2);
             if(getRotation() != 0)
                 setRotation(0);
             body.setFixedRotation(true);
