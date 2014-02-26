@@ -172,4 +172,9 @@ public abstract class SimpleActor extends Actor {
     public float getY() {
         return super.getY() + getHeight() / 2;
     }
+
+    public void dispose() {
+        if(body != null)
+            physicsWorld.destroyBody(body);
+    }
 }

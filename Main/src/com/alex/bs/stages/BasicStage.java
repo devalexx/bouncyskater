@@ -42,6 +42,13 @@ public abstract class BasicStage extends Stage {
             ((SimpleActor) actor).createPhysicsActor(physicsWorld);
     }
 
+    public void removeActor(Actor actor) {
+        getRoot().removeActor(actor);
+
+        if(actor instanceof SimpleActor)
+            ((SimpleActor) actor).dispose();
+    }
+
     public boolean isDebug() {
         return debug;
     }
