@@ -72,6 +72,26 @@ public class EditorUI extends Table {
         table.add(scrollPane).fill().expand();
         paneTable.align(Align.top);
 
+        TextButton addPlayerButton = new TextButton("Player", skin.get(TextButton.TextButtonStyle.class));
+        addPlayerButton.addListener(new ClickListener(0) {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                editorManager.addPlayer();
+            }
+        });
+        paneTable.add(addPlayerButton);
+
+        TextButton addSkateButton = new TextButton("Skate", skin.get(TextButton.TextButtonStyle.class));
+        addSkateButton.addListener(new ClickListener(0) {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                editorManager.addSkate();
+            }
+        });
+        paneTable.add(addSkateButton);
+
+        paneTable.row();
+
         TextButton addWallButton = new TextButton("Wall", skin.get(TextButton.TextButtonStyle.class));
         addWallButton.addListener(new ClickListener(0) {
             @Override
@@ -80,8 +100,6 @@ public class EditorUI extends Table {
             }
         });
         paneTable.add(addWallButton);
-
-        paneTable.row();
 
         TextButton addMeshButton = new TextButton("Mesh", skin.get(TextButton.TextButtonStyle.class));
         addMeshButton.addListener(new ClickListener(0) {
