@@ -15,6 +15,7 @@ package com.alex.bs.managers;
 
 import com.alex.bs.helper.Box2DSeparatorHelper;
 import com.alex.bs.models.*;
+import com.alex.bs.stages.EditorStage;
 import com.alex.bs.ui.EditorUI;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -30,7 +31,7 @@ import java.io.*;
 import java.util.*;
 
 public class EditorManager {
-    private Stage stage;
+    private EditorStage stage;
     private int counter;
     private SimpleActor selectedActor;
     private EditorUI editorUI;
@@ -38,7 +39,7 @@ public class EditorManager {
     private ShapeRenderer shapeRenderer;
     private List<Vector2> vertices = new ArrayList<Vector2>();
 
-    public EditorManager(Stage stage, ShapeRenderer shapeRenderer) {
+    public EditorManager(EditorStage stage, ShapeRenderer shapeRenderer) {
         this.stage = stage;
         this.shapeRenderer = shapeRenderer;
     }
@@ -97,7 +98,7 @@ public class EditorManager {
             for(int i = children.size - 1; i >= 0; i--) {
                 Actor a = children.get(i);
                 if(a instanceof SimpleActor)
-                    stage.getRoot().removeActor(a);
+                    stage.removeActor(a);
             }
             onCreateLuaFunc.call();
         } catch (IOException e) {
