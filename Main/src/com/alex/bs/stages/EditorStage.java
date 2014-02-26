@@ -45,26 +45,6 @@ public class EditorStage extends BasicStage {
 
         physicsWorld = new World(new Vector2(0, -9.8f), true);
 
-        skate = new Skate();
-        skate.setPosition(new Vector2(300, 250));
-        addActor(skate);
-
-        Wall wall = new Wall();
-        wall.setPosition(new Vector2(300, 150));
-        addActor(wall);
-        wall = new Wall();
-        wall.setPosition(new Vector2(100, 150));
-        wall.setRotation(-10);
-        addActor(wall);
-        wall = new Wall();
-        wall.setPosition(new Vector2(700, 160));
-        wall.setRotation(0);
-        addActor(wall);
-
-        player = new Player();
-        player.setPosition(new Vector2(400, 250));
-        addActor(player);
-
         getCamera().position.set(0, 0, 0f);
 
         editorManager = new EditorManager(this, shapeRenderer);
@@ -74,16 +54,15 @@ public class EditorStage extends BasicStage {
         editorUI.debug();
         addActor(editorUI);
 
-        Mesh mesh = new Mesh();
-        mesh.addVertex(-10, -10);
-        mesh.addVertex(10, -10);
-        mesh.addVertex(10, 10);
-        mesh.addVertex(-10, 10);
-        addActor(mesh);
+        editorManager.load("temp.lua");
     }
 
     @Override
     public void addActor(Actor actor) {
+        if(actor instanceof Player)
+            player = (Player) actor;
+        if(actor instanceof Skate)
+            skate = (Skate) actor;
         if(!(actor instanceof Layout)) {
             actor.addListener(new DragListener() {
                 @Override
@@ -101,6 +80,11 @@ public class EditorStage extends BasicStage {
 
     @Override
     public void draw() {
+        editorUI.setVisible(false);
+        super.draw();
+        editorUI.setVisible(true);
+        drawDebug();
+
         if(selectedActor != null || editorManager.hasCreatingObject()) {
             Gdx.gl.glLineWidth(3);
             shapeRenderer.setProjectionMatrix(getCamera().combined);
@@ -120,11 +104,6 @@ public class EditorStage extends BasicStage {
             shapeRenderer.end();
             Gdx.gl.glLineWidth(1);
         }
-
-        editorUI.setVisible(false);
-        super.draw();
-        editorUI.setVisible(true);
-        drawDebug();
 
         Vector3 tmpScreenPos = getCamera().position.cpy();
         Vector2 tmpScreenSize = new Vector2(getCamera().viewportWidth, getCamera().viewportHeight);
