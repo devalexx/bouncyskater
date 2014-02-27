@@ -37,43 +37,61 @@ public class ExportManager {
         }
 
         accum += "end\n" +
+                "function onBeginContact(contact)\n" +
+                "    if contact:getFixtureA():getBody() == player:getBody() and\n" +
+                "            contact:getFixtureB():getBody() == obj:getBody()\n" +
+                "            or\n" +
+                "            contact:getFixtureB():getBody() == obj:getBody() and\n" +
+                "            contact:getFixtureA():getBody() == player:getBody() then\n" +
+                "        stage:removeActor(obj)\n" +
+                "    end\n" +
+                "end\n" +
+                "\n" +
+                "function onEndContact(contact)\n" +
+                "end" +
                 "\n" +
                 "function onCheck()\n" +
                 "    return false\n" +
                 "end";
+
+
 
         return accum;
     }
 
     public String exportActor(SimpleActor sa) {
         String s = "";
+        String name = sa.getName() == null ? "obj" : sa.getName();
         switch(sa.getType()) {
             case WALL:
-                s += "    obj = luajava.new(Wall)\n" +
-                        "    obj:setSpriteAndBodyBox(" + sa.getWidth() + ", " + sa.getHeight() + ")\n";
+                s += "    " + name + " = luajava.new(Wall)\n" +
+                        "    " + name + ":setSpriteAndBodyBox(" + sa.getWidth() + ", " + sa.getHeight() + ")\n";
                 break;
             case PLAYER:
-                s += "    obj = luajava.new(Player)\n";
+                s += "    " + name + " = luajava.new(Player)\n";
                 break;
             case SKATE:
-                s += "    obj = luajava.new(Skate)\n";
+                s += "    " + name + " = luajava.new(Skate)\n";
+                break;
+            case COIN:
+                s += "    " + name + " = luajava.new(Coin)\n";
                 break;
             case MESH:
-                s += "    obj = luajava.new(Mesh)\n";
+                s += "    " + name + " = luajava.new(Mesh)\n";
                 for(Vector2 v : ((Mesh)sa).getVertices())
-                s += "    obj:addVertex(" + v.x + ", " + v.y + ")\n";
+                s += "    " + name + ":addVertex(" + v.x + ", " + v.y + ")\n";
                 break;
         }
 
         if(s.isEmpty())
             return "    --Error import " + sa + "\n\n";
         else {
-            s += "    obj:setPosition(" + (sa.getX() + sa.getWidth() / 2) + ", " +
+            s += "    " + name + ":setPosition(" + (sa.getX() + sa.getWidth() / 2) + ", " +
                     (sa.getY() + sa.getHeight() / 2) + ")\n";
-            s += "    obj:setRotation(" + sa.getRotation() + ")\n";
+            s += "    " + name + ":setRotation(" + sa.getRotation() + ")\n";
             if(sa.getName() != null)
-                s += "    obj:setName('" + sa.getName() + "')\n\n";
-            s += "    stage:addActor(obj)\n\n";
+                s += "    " + name + ":setName('" + sa.getName() + "')\n\n";
+            s += "    stage:addActor(" + name + ")\n\n";
             return s;
         }
     }
