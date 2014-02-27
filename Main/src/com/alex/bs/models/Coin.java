@@ -35,7 +35,7 @@ public class Coin extends SimpleActor {
         fixtureDef.density = 1;
         fixtureDef.isSensor = true;
         fixtureDef.filter.categoryBits = CATEGORY_PICKED;
-        fixtureDef.filter.maskBits = CATEGORY_PLAYER;
+        fixtureDef.filter.maskBits = MASK_PICKED;
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;

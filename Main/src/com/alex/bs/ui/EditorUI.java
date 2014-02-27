@@ -92,6 +92,17 @@ public class EditorUI extends Table {
 
         paneTable.row();
 
+        TextButton addCoinButton = new TextButton("Coin", skin.get(TextButton.TextButtonStyle.class));
+        addCoinButton.addListener(new ClickListener(0) {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                editorManager.addCoin();
+            }
+        });
+        paneTable.add(addCoinButton);
+
+        paneTable.row();
+
         TextButton addWallButton = new TextButton("Wall", skin.get(TextButton.TextButtonStyle.class));
         addWallButton.addListener(new ClickListener(0) {
             @Override

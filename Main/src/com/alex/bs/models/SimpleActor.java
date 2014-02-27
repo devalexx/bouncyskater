@@ -31,17 +31,20 @@ public abstract class SimpleActor extends Actor {
     final short CATEGORY_PLAYER = 0x0001;
     final short CATEGORY_SKATE = 0x0002;
     final short CATEGORY_SCENERY = 0x0004;
+    final short CATEGORY_PICKED = 0x0008;
 
-    final short MASK_PLAYER = CATEGORY_SCENERY;
+    final short MASK_PLAYER = CATEGORY_SCENERY | CATEGORY_PICKED;
     final short MASK_SKATE = CATEGORY_SCENERY;
     final short MASK_SCENERY = -1;
+    final short MASK_PICKED = CATEGORY_PLAYER;
 
     public enum TYPE {
         NONE,
         WALL,
         SKATE,
         PLAYER,
-        MESH
+        MESH,
+        COIN
     }
 
     public void createPhysicsActor(World physicsWorld) {
