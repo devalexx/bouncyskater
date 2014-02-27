@@ -14,6 +14,7 @@
 package com.alex.bs.managers;
 
 import com.alex.bs.helper.Box2DSeparatorHelper;
+import com.alex.bs.listener.GameContactListener;
 import com.alex.bs.models.*;
 import com.alex.bs.stages.EditorStage;
 import com.alex.bs.ui.EditorUI;
@@ -97,6 +98,15 @@ public class EditorManager {
 
             globals.rawset("stage", CoerceJavaToLua.coerce(stage));
             LuaFunction onCreateLuaFunc = (LuaFunction) globals.rawget("onCreate");
+            try {
+                LuaFunction onBeginContactLuaFunc = (LuaFunction) globals.rawget("onBeginContact");
+                LuaFunction onEndContactLuaFunc = (LuaFunction) globals.rawget("onEndContact");
+
+                GameContactListener contactListener = new GameContactListener(onBeginContactLuaFunc, onEndContactLuaFunc);
+                stage.getPhysicsWorld().setContactListener(contactListener);
+            } catch (Exception e) {
+                System.err.println(e);
+            }
 
             SnapshotArray<Actor> children = stage.getRoot().getChildren();
             for(int i = children.size - 1; i >= 0; i--) {
@@ -181,5 +191,17 @@ public class EditorManager {
         stage.addActor(skate);
 
         return skate;
+    }
+
+    public Coin addCoin() {
+        Coin coin = new Coin();
+        moveToCenter(coin);
+        coin.setName("coin_" + counter++);
+        selectedActor = coin;
+        editorUI.setSelectedActor(selectedActor);
+        stage.setSelectedActor(selectedActor);
+        stage.addActor(coin);
+
+        return coin;
     }
 }
