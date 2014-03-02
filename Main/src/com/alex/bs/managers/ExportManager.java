@@ -86,6 +86,7 @@ public class ExportManager {
             s += "    " + name + ":setPosition(" + (sa.getX() + sa.getWidth() / 2) + ", " +
                     (sa.getY() + sa.getHeight() / 2) + ")\n";
             s += "    " + name + ":setRotation(" + sa.getRotation() + ")\n";
+            s += "    " + name + ":setBodyType(BodyType." + sa.getBodyType() + ")\n";
             if(sa.getName() != null)
                 s += "    " + name + ":setName('" + sa.getName() + "')\n";
             s += "    stage:addActor(" + name + ")\n\n";
