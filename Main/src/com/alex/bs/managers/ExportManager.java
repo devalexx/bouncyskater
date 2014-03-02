@@ -20,9 +20,13 @@ import com.badlogic.gdx.scenes.scene2d.*;
 
 public class ExportManager {
     private Stage stage;
+    private String onCheckStr, onBeginContactStr, onEndContactStr;
 
-    public ExportManager(Stage stage) {
+    public ExportManager(Stage stage, String onCheckStr, String onBeginContactStr, String onEndContactStr) {
         this.stage = stage;
+        this.onCheckStr = onCheckStr;
+        this.onBeginContactStr = onBeginContactStr;
+        this.onEndContactStr = onEndContactStr;
     }
 
     public String export() {
@@ -38,20 +42,13 @@ public class ExportManager {
 
         accum += "end\n" +
                 "function onBeginContact(contact)\n" +
-                "    if contact:getFixtureA():getBody() == player:getBody() and\n" +
-                "            contact:getFixtureB():getBody() == obj:getBody()\n" +
-                "            or\n" +
-                "            contact:getFixtureB():getBody() == obj:getBody() and\n" +
-                "            contact:getFixtureA():getBody() == player:getBody() then\n" +
-                "        stage:removeActor(obj)\n" +
-                "    end\n" +
+                onBeginContactStr +
                 "end\n" +
-                "\n" +
                 "function onEndContact(contact)\n" +
-                "end" +
-                "\n" +
+                onEndContactStr +
+                "end\n" +
                 "function onCheck()\n" +
-                "    return false\n" +
+                onCheckStr +
                 "end";
 
 
@@ -60,7 +57,7 @@ public class ExportManager {
     }
 
     public String exportActor(SimpleActor sa) {
-        String s = "";
+        String s = "    ------------------\n";
         String name = sa.getName() == null ? "obj" : sa.getName();
         switch(sa.getType()) {
             case WALL:
@@ -90,7 +87,7 @@ public class ExportManager {
                     (sa.getY() + sa.getHeight() / 2) + ")\n";
             s += "    " + name + ":setRotation(" + sa.getRotation() + ")\n";
             if(sa.getName() != null)
-                s += "    " + name + ":setName('" + sa.getName() + "')\n\n";
+                s += "    " + name + ":setName('" + sa.getName() + "')\n";
             s += "    stage:addActor(" + name + ")\n\n";
             return s;
         }

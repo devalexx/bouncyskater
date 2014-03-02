@@ -39,6 +39,7 @@ public class EditorManager {
     private SimpleActor.TYPE creatingObject = SimpleActor.TYPE.NONE;
     private ShapeRenderer shapeRenderer;
     private List<Vector2> vertices = new ArrayList<Vector2>();
+    private String onBeginContactStr, onEndContactStr, onCheckStr;
 
     public EditorManager(EditorStage stage, ShapeRenderer shapeRenderer) {
         this.stage = stage;
@@ -75,7 +76,7 @@ public class EditorManager {
 
     public void save(String text) {
         FileHandle file = Gdx.files.local("data/levels/editor/" + text);
-        file.writeString(new ExportManager(stage).export(), false);
+        file.writeString(new ExportManager(stage, onCheckStr, onBeginContactStr, onEndContactStr).export(), false);
     }
 
     public boolean load(String text) {
@@ -107,6 +108,14 @@ public class EditorManager {
             } catch (Exception e) {
                 System.err.println(e);
             }
+
+            String accumStr = file.readString();
+            onBeginContactStr = accumStr.substring(accumStr.indexOf("function onBeginContact(contact)\n") + 33,
+                    accumStr.indexOf("end\nfunction", accumStr.indexOf("function onBeginContact(contact)\n")));
+            onEndContactStr = accumStr.substring(accumStr.indexOf("function onEndContact(contact)\n") + 31,
+                    accumStr.indexOf("end\nfunction", accumStr.indexOf("function onEndContact(contact)\n")));
+            onCheckStr = accumStr.substring(accumStr.indexOf("function onCheck()\n") + 19,
+                    accumStr.length() - 3);
 
             SnapshotArray<Actor> children = stage.getRoot().getChildren();
             for(int i = children.size - 1; i >= 0; i--) {
