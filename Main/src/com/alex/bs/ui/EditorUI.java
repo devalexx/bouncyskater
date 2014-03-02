@@ -13,14 +13,19 @@
  ******************************************************************************/
 package com.alex.bs.ui;
 
-import com.alex.bs.managers.*;
-import com.alex.bs.models.*;
-import com.alex.bs.stages.*;
+import com.alex.bs.managers.EditorManager;
+import com.alex.bs.managers.ResourceManager;
+import com.alex.bs.models.SimpleActor;
+import com.alex.bs.stages.EditorStage;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.*;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.*;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+
+import java.text.DecimalFormat;
 
 public class EditorUI extends Table {
     private Skin skin;
@@ -29,6 +34,7 @@ public class EditorUI extends Table {
     private Actor selectedActor;
     private TextField posTextField, sizeTextField, nameTextField, angleTextField;
     private Label cursorPosValueLabel;
+    private DecimalFormat floatFormat = new DecimalFormat("0.##");
 
     public EditorUI(EditorStage stage, EditorManager editorManager) {
         this.stage = stage;
@@ -314,21 +320,21 @@ public class EditorUI extends Table {
         nameTextField.setText(title);
 
         if(selectedActor != null)
-            title = selectedActor.getX() + "," + selectedActor.getY();
+            title = floatFormat.format(selectedActor.getX()) + "," + floatFormat.format(selectedActor.getY());
         else
             title = "-,-";
 
         posTextField.setText(title);
 
         if(selectedActor != null)
-            title = selectedActor.getWidth() + "," + selectedActor.getHeight();
+            title = floatFormat.format(selectedActor.getWidth()) + "," + floatFormat.format(selectedActor.getHeight());
         else
             title = "-,-";
 
         sizeTextField.setText(title);
 
         if(selectedActor != null)
-            title = String.valueOf(selectedActor.getRotation());
+            title = String.valueOf(floatFormat.format(selectedActor.getRotation()));
         else
             title = "-";
 
