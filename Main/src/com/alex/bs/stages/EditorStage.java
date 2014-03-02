@@ -163,7 +163,7 @@ public class EditorStage extends BasicStage {
                 break;
             case Input.Keys.UP:
                 if(player != null && player.standUp() && player.isPlayerGrounded())
-                    player.applyForceToCenter(new Vector2(0, 30));
+                    player.applyForceToCenter(new Vector2(0, 35));
                 break;
         }
 

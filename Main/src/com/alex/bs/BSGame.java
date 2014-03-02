@@ -14,7 +14,7 @@
 package com.alex.bs;
 
 import com.alex.bs.managers.ResourceManager;
-import com.alex.bs.screens.EditorScreen;
+import com.alex.bs.screens.GameScreen;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 
@@ -23,8 +23,8 @@ public class BSGame extends Game {
     public void create() {
         ResourceManager.getInstance().getAtlas("images/pack.atlas");
 
-        //setScreen(new GameScreen(this));
-        setScreen(new EditorScreen(this));
+        setScreen(new GameScreen(this));
+        //setScreen(new EditorScreen(this));
         Gdx.gl.glClearColor(1, 1, 1, 1);
     }
 }

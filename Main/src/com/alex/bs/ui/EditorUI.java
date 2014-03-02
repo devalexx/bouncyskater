@@ -348,13 +348,13 @@ public class EditorUI extends Table {
         selectedActor.setName(nameTextField.getText());
 
         try {
-            String text = posTextField.getText();
-            Vector2 v = new Vector2(Float.valueOf(text.substring(0, text.indexOf(","))),
+            String text = sizeTextField.getText();
+            Vector2 s = new Vector2(Float.valueOf(text.substring(0, text.indexOf(","))),
                     Float.valueOf(text.substring(text.indexOf(",") + 1)));
-            selectedActor.setPosition(v.x, v.y);
+            selectedActor.setSize(s.x, s.y);
 
-            text = sizeTextField.getText();
-            v = new Vector2(Float.valueOf(text.substring(0, text.indexOf(","))),
+            text = posTextField.getText();
+            Vector2 v = new Vector2(Float.valueOf(text.substring(0, text.indexOf(","))),
                     Float.valueOf(text.substring(text.indexOf(",") + 1)));
             selectedActor.setSize(v.x, v.y);
 

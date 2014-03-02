@@ -13,11 +13,18 @@
  ******************************************************************************/
 package com.alex.bs.stages;
 
-import com.alex.bs.models.*;
-import com.badlogic.gdx.*;
+import com.alex.bs.models.SimpleActor;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.scenes.scene2d.*;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public abstract class BasicStage extends Stage {
     public static final float WORLD_TO_BOX = 0.01f;
@@ -25,6 +32,9 @@ public abstract class BasicStage extends Stage {
     protected World physicsWorld;
     protected boolean debug;
     protected Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
+    private HashMap<Body, SimpleActor> physicsActorMap = new HashMap<Body, SimpleActor>();
+    private List<SimpleActor> actorsToRemove = new LinkedList<SimpleActor>();
+    private List<SimpleActor> gameActors = new LinkedList<SimpleActor>();
 
     protected BasicStage(float width, float height, boolean keepAspectRatio) {
         super(width, height, keepAspectRatio);
@@ -38,15 +48,30 @@ public abstract class BasicStage extends Stage {
     public void addActor(Actor actor) {
         super.addActor(actor);
 
-        if(actor instanceof SimpleActor)
-            ((SimpleActor) actor).createPhysicsActor(physicsWorld);
+        if(actor instanceof SimpleActor) {
+            SimpleActor sa = ((SimpleActor) actor);
+            gameActors.add(sa);
+            sa.createPhysicsActor(physicsWorld);
+            if(sa.getBody() != null)
+                physicsActorMap.put(sa.getBody(), sa);
+        }
+    }
+
+    public SimpleActor getActorByBody(Body body) {
+        return physicsActorMap.get(body);
     }
 
     public void removeActor(Actor actor) {
         getRoot().removeActor(actor);
 
-        if(actor instanceof SimpleActor)
+        if(actor instanceof SimpleActor) {
+            gameActors.remove(actor);
             ((SimpleActor) actor).dispose();
+        }
+    }
+
+    public void safeRemoveActor(SimpleActor sa) {
+        actorsToRemove.add(sa);
     }
 
     public boolean isDebug() {
@@ -75,5 +100,26 @@ public abstract class BasicStage extends Stage {
         Matrix4 debugMatrix = new Matrix4(getCamera().combined);
         debugMatrix.scl(GameStage.BOX_TO_WORLD);
         debugRenderer.render(physicsWorld, debugMatrix);
+    }
+
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+        for(SimpleActor sa : actorsToRemove)
+            removeActor(sa);
+    }
+
+    public List<SimpleActor> getGameActors() {
+        return gameActors;
+    }
+
+    public List<SimpleActor> getGameActorsByType(SimpleActor.TYPE type) {
+        List<SimpleActor> actors = new LinkedList<SimpleActor>();
+
+        for(SimpleActor sa : gameActors)
+            if(sa.getType() == type)
+                actors.add(sa);
+
+        return actors;
     }
 }

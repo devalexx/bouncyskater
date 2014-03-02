@@ -25,7 +25,7 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 
 public class Player extends SimpleActor {
     private Fixture playerPhysicsFixture, playerSensorFixture;
-    private boolean canStandUp = true, standUp = true, playerGrounded;
+    private boolean canStandUp = true, standUp = true, dead = false, playerGrounded;
     private Joint skateJoint;
     private Skate skate;
     private float MAX_VELOCITY = 100;
@@ -106,6 +106,9 @@ public class Player extends SimpleActor {
     public boolean standUp() {
         if(standUp)
             return true;
+
+        if(dead)
+            return false;
 
         if(canStandUp) {
             setPosition(getX(), getY() + (getHeight() / 2) - (float) Math.cos(Math.toRadians(getRotation())) * getHeight() / 2);
@@ -209,5 +212,10 @@ public class Player extends SimpleActor {
                     applyForceToCenter(2, 0, true);
             }
         }
+    }
+
+    public void kill() {
+        dead = true;
+        fall();
     }
 }

@@ -133,7 +133,7 @@ public abstract class SimpleActor extends Actor {
     }
 
     public void setBodyBox(float width, float height) {
-        setSize(width, height);
+        super.setSize(width, height);
         setOrigin(width / 2, height / 2);
         physOffset.set(width / 2, height / 2);
     }
@@ -141,6 +141,17 @@ public abstract class SimpleActor extends Actor {
     public void setSpriteBox(float width, float height) {
         sprite.setSize(width, height);
         sprite.setOrigin(width / 2, height / 2);
+    }
+
+    @Override
+    public void setSize(float width, float height) {
+        setBodyBox(width, height);
+        setSpriteBox(width, height);
+
+        if(body != null) {
+            physicsWorld.destroyBody(body);
+            createPhysicsActor(physicsWorld);
+        }
     }
 
     public float getPhysicsWidth() {
@@ -165,18 +176,9 @@ public abstract class SimpleActor extends Actor {
         return new Vector2(getX(), getY());
     }
 
-    @Override
-    public float getX() {
-        return super.getX();
-    }
-
-    @Override
-    public float getY() {
-        return super.getY();
-    }
-
     public void dispose() {
         if(body != null)
             physicsWorld.destroyBody(body);
+        body = null;
     }
 }
