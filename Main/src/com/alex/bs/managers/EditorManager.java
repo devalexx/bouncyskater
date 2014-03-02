@@ -39,7 +39,7 @@ public class EditorManager {
     private SimpleActor.TYPE creatingObject = SimpleActor.TYPE.NONE;
     private ShapeRenderer shapeRenderer;
     private List<Vector2> vertices = new ArrayList<Vector2>();
-    private String onBeginContactStr, onEndContactStr, onCheckStr;
+    public String onBeginContactStr, onEndContactStr, onCheckStr;
 
     public EditorManager(EditorStage stage, ShapeRenderer shapeRenderer) {
         this.stage = stage;

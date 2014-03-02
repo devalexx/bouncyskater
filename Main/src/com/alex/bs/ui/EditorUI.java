@@ -239,10 +239,47 @@ public class EditorUI extends Table {
 
     private Table createConsoleTable() {
         Table table = new Table();
-        table.add(new ScrollPane(
-                new Label("qwe\nqwe\nqwe\nqwe\nqwe\nqwe\nqwe\n", skin.get(Label.LabelStyle.class)),
-                skin.get(ScrollPane.ScrollPaneStyle.class)
-        )).fill().expand();
+        Table textEditorTable = new Table();
+        ScrollPane scrollPane = new ScrollPane(textEditorTable, skin.get(ScrollPane.ScrollPaneStyle.class));
+        table.add(scrollPane).fill().expand();
+
+        Table buttonsTable = new Table();
+
+        textEditorTable.add(buttonsTable).top();
+
+        final Label label = new Label("", skin);
+        textEditorTable.add(label).expand().top();
+
+        TextButton onCheckButton = new TextButton("onCheck", skin.get(TextButton.TextButtonStyle.class));
+        buttonsTable.add(onCheckButton);
+        onCheckButton.addListener(new ClickListener(0) {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                label.setText(editorManager.onCheckStr);
+            }
+        });
+
+        buttonsTable.row();
+
+        TextButton onBeginContactButton = new TextButton("onBeginContact", skin.get(TextButton.TextButtonStyle.class));
+        buttonsTable.add(onBeginContactButton);
+        onBeginContactButton.addListener(new ClickListener(0) {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                label.setText(editorManager.onBeginContactStr);
+            }
+        });
+
+        buttonsTable.row();
+
+        TextButton onEndContactButton = new TextButton("onEndContact", skin.get(TextButton.TextButtonStyle.class));
+        buttonsTable.add(onEndContactButton);
+        onEndContactButton.addListener(new ClickListener(0) {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                label.setText(editorManager.onEndContactStr);
+            }
+        });
 
         return table;
     }
