@@ -213,4 +213,11 @@ public class EditorManager {
 
         return coin;
     }
+
+    public void removeSelectedActor() {
+        stage.removeActor(selectedActor);
+        selectedActor = null;
+        editorUI.setSelectedActor(null);
+        stage.setSelectedActor(null);
+    }
 }

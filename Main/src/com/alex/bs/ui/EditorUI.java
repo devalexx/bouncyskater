@@ -228,6 +228,17 @@ public class EditorUI extends Table {
 
         paneTable.row();
 
+        TextButton removeButton = new TextButton("Remove", skin.get(TextButton.TextButtonStyle.class));
+        removeButton.addListener(new ClickListener(0) {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                editorManager.removeSelectedActor();
+            }
+        });
+        paneTable.add(removeButton);
+
+        paneTable.row();
+
         Label cursorPosLabel = new Label("Cursor:", skin.get(Label.LabelStyle.class));
         paneTable.add(cursorPosLabel);
 
