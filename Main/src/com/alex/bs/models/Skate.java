@@ -34,6 +34,7 @@ public class Skate extends SimpleActor {
         sprite.setOrigin(sprite.getWidth() / 2, sprite.getHeight() / 2);
         wheel.setOrigin(wheel.getWidth() / 2, wheel.getHeight() / 2);
         setBodyBox(100, 10);
+        bodyType = BodyDef.BodyType.DynamicBody;
     }
 
     @Override
@@ -48,7 +49,7 @@ public class Skate extends SimpleActor {
         fixtureDef.filter.maskBits = MASK_SKATE;
 
         BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.type = bodyType;
         body = physicsWorld.createBody(bodyDef);
         body.createFixture(fixtureDef);
         body.resetMassData();
@@ -64,7 +65,7 @@ public class Skate extends SimpleActor {
         fixtureDef2.filter.maskBits = MASK_SKATE;
 
         BodyDef bodyDef2 = new BodyDef();
-        bodyDef2.type = BodyDef.BodyType.DynamicBody;
+        bodyDef2.type = bodyType;
         bodyDef2.position.set(new Vector2(-getPhysicsWidth() / 3.5f, -getPhysicsWidth() / 5));
         leftWheelBody = physicsWorld.createBody(bodyDef2);
         leftWheelBody.createFixture(fixtureDef2);
@@ -81,7 +82,7 @@ public class Skate extends SimpleActor {
         fixtureDef3.filter.maskBits = MASK_SKATE;
 
         BodyDef bodyDef3 = new BodyDef();
-        bodyDef3.type = BodyDef.BodyType.DynamicBody;
+        bodyDef3.type = bodyType;
         bodyDef3.position.set(new Vector2(getPhysicsWidth() / 3.5f , -getPhysicsWidth() / 5));
         rightWheelBody = physicsWorld.createBody(bodyDef3);
         rightWheelBody.createFixture(fixtureDef3);

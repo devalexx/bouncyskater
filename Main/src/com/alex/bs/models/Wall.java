@@ -35,7 +35,7 @@ public class Wall extends SimpleActor {
         fixtureDef.filter.maskBits = MASK_SCENERY;
 
         BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.StaticBody;
+        bodyDef.type = bodyType;
         body = physicsWorld.createBody(bodyDef);
         body.createFixture(fixtureDef);
         body.resetMassData();

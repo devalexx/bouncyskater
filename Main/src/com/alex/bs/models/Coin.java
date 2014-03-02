@@ -23,6 +23,7 @@ public class Coin extends SimpleActor {
         sprite.setColor(Color.GREEN);
         type = TYPE.COIN;
         setSpriteAndBodyBox(10, 10);
+        bodyType = BodyDef.BodyType.KinematicBody;
     }
 
     @Override
@@ -38,7 +39,7 @@ public class Coin extends SimpleActor {
         fixtureDef.filter.maskBits = MASK_PICKED;
 
         BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.StaticBody;
+        bodyDef.type = bodyType;
         body = physicsWorld.createBody(bodyDef);
         body.createFixture(fixtureDef);
         body.resetMassData();

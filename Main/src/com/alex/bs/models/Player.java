@@ -36,6 +36,7 @@ public class Player extends SimpleActor {
         setBodyBox(30, 90);
         setSpriteBox(30, 90);
         physOffset.set(15, 50);
+        bodyType = BodyDef.BodyType.DynamicBody;
     }
 
     @Override
@@ -45,7 +46,7 @@ public class Player extends SimpleActor {
         filter.categoryBits = CATEGORY_PLAYER;
 
         BodyDef def = new BodyDef();
-        def.type = BodyDef.BodyType.DynamicBody;
+        def.type = bodyType;
         body = physicsWorld.createBody(def);
 
         PolygonShape poly = new PolygonShape();

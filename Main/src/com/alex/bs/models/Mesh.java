@@ -94,7 +94,7 @@ public class Mesh extends SimpleActor {
         poly.setOrigin(width / 2, height / 2);
 
         BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.StaticBody;
+        bodyDef.type = bodyType;
 
         body = physicsWorld.createBody(bodyDef);
 

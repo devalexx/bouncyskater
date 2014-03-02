@@ -27,6 +27,7 @@ public abstract class SimpleActor extends Actor {
     protected World physicsWorld;
     protected Vector2 pos = new Vector2();
     protected Vector2 physOffset = new Vector2();
+    protected BodyDef.BodyType bodyType = BodyDef.BodyType.StaticBody;
 
     final short CATEGORY_PLAYER = 0x0001;
     final short CATEGORY_SKATE = 0x0002;
@@ -81,6 +82,11 @@ public abstract class SimpleActor extends Actor {
             body.setTransform(new Vector2(x, y).add(physOffset).scl(GameStage.WORLD_TO_BOX), body.getAngle());
         pos.set(x, y);
         super.setPosition(x, y);
+    }
+
+    @Override
+    public void translate(float x, float y) {
+        setPosition(pos.cpy().add(x, y));
     }
 
     public void setLinearVelocity(Vector2 vec) {
@@ -180,5 +186,13 @@ public abstract class SimpleActor extends Actor {
         if(body != null)
             physicsWorld.destroyBody(body);
         body = null;
+    }
+
+    public BodyDef.BodyType getBodyType() {
+        return bodyType;
+    }
+
+    public void setBodyType(BodyDef.BodyType bodyType) {
+        this.bodyType = bodyType;
     }
 }

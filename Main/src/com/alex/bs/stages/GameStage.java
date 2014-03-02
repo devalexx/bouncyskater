@@ -20,7 +20,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaClosure;
@@ -35,7 +34,6 @@ import java.io.InputStream;
 public class GameStage extends BasicStage {
     private Skate skate;
     private Player player;
-    private Action leftAction, rightAction;
     private boolean wonGame;
     private LuaFunction onCreateLuaFunc, onCheckLuaFunc;
 
