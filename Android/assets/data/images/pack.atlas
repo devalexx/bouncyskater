@@ -10,6 +10,13 @@ player
   orig: 96, 256
   offset: 0, 0
   index: -1
+player_sheet
+  rotate: false
+  xy: 2, 326
+  size: 288, 512
+  orig: 288, 512
+  offset: 0, 0
+  index: -1
 skate
   rotate: false
   xy: 100, 260

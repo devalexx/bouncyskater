@@ -16,12 +16,6 @@ package com.alex.bs.screens;
 import com.alex.bs.BSGame;
 import com.alex.bs.stages.*;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 
 public class GameScreen extends BasicScreen {
     private GameStage world;

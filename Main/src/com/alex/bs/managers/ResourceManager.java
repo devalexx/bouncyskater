@@ -61,8 +61,8 @@ public class ResourceManager {
         return null;
     }
 
-    public Sprite getRegionFromDefaultAtlas(String textureName) {
-        return getSpriteFromAtlas("pack.atlas", textureName);
+    public TextureRegion getRegionFromDefaultAtlas(String textureName) {
+        return getRegionFromAtlas("pack.atlas", textureName);
     }
 
     public TextureAtlas.AtlasRegion getRegionFromAtlas(String atlasName, String textureName) {

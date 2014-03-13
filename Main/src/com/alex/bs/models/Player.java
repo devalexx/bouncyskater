@@ -15,11 +15,14 @@ package com.alex.bs.models;
 
 import com.alex.bs.managers.ResourceManager;
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.*;
 import com.badlogic.gdx.utils.Array;
+
+import java.util.*;
 
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 
@@ -29,9 +32,26 @@ public class Player extends SimpleActor {
     private Joint skateJoint;
     private Skate skate;
     private float MAX_VELOCITY = 100;
+    private List<Body> ragdollBodies = new ArrayList<Body>();
+    private Animation standAnimation, runAnimation;
+    private TextureRegion[] standFrames = new TextureRegion[FRAME_COLS];
+    private TextureRegion[] runFrames = new TextureRegion[FRAME_COLS];
+    private float stateTime = 0;
+
+    private static final int FRAME_COLS = 3;
+    private static final int FRAME_ROWS = 2;
 
     public Player() {
         sprite = ResourceManager.getInstance().getSpriteFromDefaultAtlas("player");
+        TextureRegion t = ResourceManager.getInstance().getRegionFromDefaultAtlas("player_sheet");
+        TextureRegion[][] tmp = t.split(t.getRegionWidth() / FRAME_COLS, t.getRegionHeight() / FRAME_ROWS);
+
+        System.arraycopy(tmp[0], 0, standFrames, 0, FRAME_COLS);
+        System.arraycopy(tmp[1], 0, runFrames, 0, FRAME_COLS);
+
+        runAnimation = new Animation(0.15f, runFrames);
+        standAnimation = new Animation(0.15f, standFrames);
+
         type = TYPE.PLAYER;
         setBodyBox(30, 90);
         setSpriteBox(30, 90);
@@ -66,6 +86,13 @@ public class Player extends SimpleActor {
         body.setBullet(true);
         body.setFixedRotation(true);
 
+        /*poly = new PolygonShape();
+        poly.setAsBox(getPhysicsWidth() / 2 * 0.66f, getPhysicsHeight() / 2 * 0.4f);
+        Body torsoBody = physicsWorld.createBody(def);
+        torsoBody.createFixture(poly, 1);
+
+        ragdollBodies.add(torsoBody);*/
+
         super.createPhysicsActor(physicsWorld);
     }
 
@@ -79,9 +106,26 @@ public class Player extends SimpleActor {
 
     @Override
     public void draw(SpriteBatch batch, float parentAlpha) {
-        sprite.setPosition(getX(), getY());
-        sprite.setRotation(getRotation());
-        sprite.draw(batch);
+        stateTime += Gdx.graphics.getDeltaTime();
+        TextureRegion currentFrame = null;
+        if(!standUp) {
+            sprite.setPosition(getX(), getY());
+            sprite.setRotation(getRotation());
+            sprite.draw(batch);
+        } else if(Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            currentFrame = runAnimation.getKeyFrame(stateTime, true);
+            if(Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !currentFrame.isFlipX())
+                currentFrame.flip(true, false);
+            else if(Gdx.input.isKeyPressed(Input.Keys.LEFT) && currentFrame.isFlipX())
+                currentFrame.flip(true, false);
+        } else {
+            currentFrame = standAnimation.getKeyFrame(stateTime, true);
+        }
+
+        if(currentFrame != null) {
+            batch.draw(currentFrame, getX(), getY(), getOriginX(), getOriginY(),
+                    getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
+        }
     }
 
     public void fall() {
