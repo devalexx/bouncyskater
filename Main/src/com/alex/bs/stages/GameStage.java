@@ -119,4 +119,10 @@ public class GameStage extends BasicStage {
 
         super.addActor(actor);
     }
+
+    @Override
+    public void draw() {
+        super.draw();
+        drawDebug();
+    }
 }
