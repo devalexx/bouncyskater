@@ -14,10 +14,10 @@
 package com.alex.bs.models;
 
 import com.alex.bs.managers.ResourceManager;
+import com.alex.bs.stages.GameStage;
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.*;
 import com.badlogic.gdx.utils.Array;
@@ -31,18 +31,24 @@ public class Player extends SimpleActor {
     private boolean canStandUp = true, standUp = true, dead = false, playerGrounded;
     private Joint skateJoint;
     private Skate skate;
-    private float MAX_VELOCITY = 100;
+    private float MAX_VELOCITY = 125;
     private List<Body> ragdollBodies = new ArrayList<Body>();
+    private List<Vector2> ragdollBodiesSize = new ArrayList<Vector2>();
+    private List<Vector2> ragdollBodiesOffset = new ArrayList<Vector2>();
     private Animation standAnimation, runAnimation;
     private TextureRegion[] standFrames = new TextureRegion[FRAME_COLS];
     private TextureRegion[] runFrames = new TextureRegion[FRAME_COLS];
     private float stateTime = 0;
+    private boolean needRemoveBody = false, needRemoveRagdollBody = false;
+    private Sprite spriteBlack;
+    private Vector2 tmpVel = new Vector2();
 
     private static final int FRAME_COLS = 3;
     private static final int FRAME_ROWS = 2;
 
     public Player() {
         sprite = ResourceManager.getInstance().getSpriteFromDefaultAtlas("player");
+        spriteBlack = ResourceManager.getInstance().getSpriteFromDefaultAtlas("wall");
         TextureRegion t = ResourceManager.getInstance().getRegionFromDefaultAtlas("player_sheet");
         TextureRegion[][] tmp = t.split(t.getRegionWidth() / FRAME_COLS, t.getRegionHeight() / FRAME_ROWS);
 
@@ -86,14 +92,111 @@ public class Player extends SimpleActor {
         body.setBullet(true);
         body.setFixedRotation(true);
 
-        /*poly = new PolygonShape();
-        poly.setAsBox(getPhysicsWidth() / 2 * 0.66f, getPhysicsHeight() / 2 * 0.4f);
-        Body torsoBody = physicsWorld.createBody(def);
-        torsoBody.createFixture(poly, 1);
-
-        ragdollBodies.add(torsoBody);*/
-
         super.createPhysicsActor(physicsWorld);
+    }
+
+    public void createRagdollPhysicsActor() {
+        Filter filter = new Filter();
+        filter.maskBits = MASK_PLAYER;
+        filter.categoryBits = CATEGORY_PLAYER;
+
+        BodyDef def = new BodyDef();
+        def.type = bodyType;
+
+        PolygonShape poly = new PolygonShape();
+        poly.setAsBox(getPhysicsWidth() / 10, getPhysicsHeight() / 2 * 0.4f);
+        Body torsoBody = physicsWorld.createBody(def);
+        torsoBody.createFixture(poly, 1).setFilterData(filter);
+
+        ragdollBodiesSize.add(new Vector2(getPhysicsWidth() / 10, getPhysicsHeight() / 2 * 0.4f).scl(GameStage.BOX_TO_WORLD));
+        ragdollBodiesOffset.add(new Vector2(0, 0));
+        ragdollBodies.add(torsoBody);
+
+        CircleShape circle = new CircleShape();
+        circle.setRadius(getPhysicsWidth() / 3);
+        circle.setPosition(new Vector2(0, getPhysicsHeight() / 2 * 0.65f));
+        Body headBody = physicsWorld.createBody(def);
+        headBody.createFixture(circle, 1).setFilterData(filter);
+
+        ragdollBodiesSize.add(new Vector2(getPhysicsWidth() / 3, getPhysicsWidth() / 3).scl(GameStage.BOX_TO_WORLD));
+        ragdollBodiesOffset.add(new Vector2(0, getPhysicsHeight() / 2 * 0.65f));
+        ragdollBodies.add(headBody);
+
+        poly = new PolygonShape();
+        poly.setAsBox(getPhysicsWidth() / 14, getPhysicsHeight() / 2 * 0.3f,
+                new Vector2(0, getPhysicsHeight() * 0.05f), 0);
+        Body leftHandBody = physicsWorld.createBody(def);
+        leftHandBody.createFixture(poly, 1).setFilterData(filter);
+
+        ragdollBodiesSize.add(new Vector2(getPhysicsWidth() / 14, getPhysicsHeight() / 2 * 0.3f).scl(GameStage.BOX_TO_WORLD));
+        ragdollBodiesOffset.add(new Vector2(0, getPhysicsHeight() * 0.05f));
+        ragdollBodies.add(leftHandBody);
+
+        poly = new PolygonShape();
+        poly.setAsBox(getPhysicsWidth() / 14, getPhysicsHeight() / 2 * 0.3f,
+                new Vector2(0, getPhysicsHeight() * 0.05f), 0);
+        Body rightHandBody = physicsWorld.createBody(def);
+        rightHandBody.createFixture(poly, 1).setFilterData(filter);
+
+        ragdollBodiesSize.add(new Vector2(getPhysicsWidth() / 14, getPhysicsHeight() / 2 * 0.3f).scl(GameStage.BOX_TO_WORLD));
+        ragdollBodiesOffset.add(new Vector2(0, getPhysicsHeight() * 0.05f));
+        ragdollBodies.add(rightHandBody);
+
+        poly = new PolygonShape();
+        poly.setAsBox(getPhysicsWidth() / 14, getPhysicsHeight() / 2 * 0.4f,
+                new Vector2(0, -getPhysicsHeight() * 0.4f), 0);
+        Body leftLegBody = physicsWorld.createBody(def);
+        leftLegBody.createFixture(poly, 1).setFilterData(filter);
+
+        ragdollBodiesSize.add(new Vector2(getPhysicsWidth() / 14, getPhysicsHeight() / 2 * 0.4f).scl(GameStage.BOX_TO_WORLD));
+        ragdollBodiesOffset.add(new Vector2(0, -getPhysicsHeight() * 0.4f));
+        ragdollBodies.add(leftLegBody);
+
+        poly = new PolygonShape();
+        poly.setAsBox(getPhysicsWidth() / 14, getPhysicsHeight() / 2 * 0.4f,
+                new Vector2(0, -getPhysicsHeight() * 0.4f), 0);
+        Body rightLegBody = physicsWorld.createBody(def);
+        rightLegBody.createFixture(poly, 1).setFilterData(filter);
+
+        ragdollBodiesSize.add(new Vector2(getPhysicsWidth() / 14, getPhysicsHeight() / 2 * 0.4f).scl(GameStage.BOX_TO_WORLD));
+        ragdollBodiesOffset.add(new Vector2(0, -getPhysicsHeight() * 0.4f));
+        ragdollBodies.add(rightLegBody);
+
+        RevoluteJointDef revoluteJointDef = new RevoluteJointDef();
+        revoluteJointDef.enableLimit = true;
+
+        revoluteJointDef.initialize(torsoBody, headBody, new Vector2(0, getPhysicsHeight() / 2 * 0.55f));
+        revoluteJointDef.lowerAngle = MathUtils.degreesToRadians * -45;
+        revoluteJointDef.upperAngle = MathUtils.degreesToRadians * 45;
+        physicsWorld.createJoint(revoluteJointDef);
+
+        revoluteJointDef.enableLimit = false;
+
+        revoluteJointDef.initialize(leftHandBody, torsoBody, new Vector2(0, getPhysicsHeight() / 2 * 0.4f));
+        physicsWorld.createJoint(revoluteJointDef);
+
+        revoluteJointDef.initialize(rightHandBody, torsoBody, new Vector2(0, getPhysicsHeight() / 2 * 0.4f));
+        physicsWorld.createJoint(revoluteJointDef);
+
+        revoluteJointDef.initialize(leftLegBody, torsoBody, new Vector2(0, -getPhysicsHeight() / 2 * 0.4f));
+        physicsWorld.createJoint(revoluteJointDef);
+
+        revoluteJointDef.initialize(rightLegBody, torsoBody, new Vector2(0, -getPhysicsHeight() / 2 * 0.4f));
+        physicsWorld.createJoint(revoluteJointDef);
+
+        for(Body b : ragdollBodies)
+            b.setTransform(pos.cpy().add(getWidth() / 2, getHeight() / 2)
+                    .scl(GameStage.WORLD_TO_BOX), (float)Math.toRadians(getRotation()));
+    }
+
+    @Override
+    public void setPosition(float x, float y, boolean applyToBody) {
+        super.setPosition(x, y, applyToBody);
+
+        if(applyToBody && ragdollBodies.size() > 0)
+            for(Body b : ragdollBodies) {
+                b.setTransform(pos.cpy().scl(GameStage.WORLD_TO_BOX), (float)Math.toRadians(getRotation()));
+            }
     }
 
     public void roll(float force) {
@@ -106,25 +209,39 @@ public class Player extends SimpleActor {
 
     @Override
     public void draw(SpriteBatch batch, float parentAlpha) {
-        stateTime += Gdx.graphics.getDeltaTime();
-        TextureRegion currentFrame = null;
-        if(!standUp) {
-            sprite.setPosition(getX(), getY());
-            sprite.setRotation(getRotation());
-            sprite.draw(batch);
-        } else if(Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            currentFrame = runAnimation.getKeyFrame(stateTime, true);
-            if(Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !currentFrame.isFlipX())
-                currentFrame.flip(true, false);
-            else if(Gdx.input.isKeyPressed(Input.Keys.LEFT) && currentFrame.isFlipX())
-                currentFrame.flip(true, false);
+        if(ragdollBodies.size() > 0) {
+            for(int i = 0; i < ragdollBodies.size(); i++) {
+                Body b = ragdollBodies.get(i);
+                Vector2 pos = b.getPosition().cpy().scl(GameStage.BOX_TO_WORLD);
+                Vector2 size = ragdollBodiesSize.get(i);
+                Vector2 offset = ragdollBodiesOffset.get(i).cpy().scl(GameStage.BOX_TO_WORLD);
+                spriteBlack.setPosition(pos.x - size.x + offset.x, pos.y - size.y + offset.y);
+                spriteBlack.setRotation((float) Math.toDegrees(b.getAngle()));
+                spriteBlack.setSize(size.x * 2, size.y * 2);
+                spriteBlack.setOrigin(size.x - offset.x, size.y - offset.y);
+                spriteBlack.draw(batch);
+            }
         } else {
-            currentFrame = standAnimation.getKeyFrame(stateTime, true);
-        }
+            stateTime += Gdx.graphics.getDeltaTime();
+            TextureRegion currentFrame = null;
+            if(!standUp) {
+                sprite.setPosition(getX(), getY());
+                sprite.setRotation(getRotation());
+                sprite.draw(batch);
+            } else if(Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+                currentFrame = runAnimation.getKeyFrame(stateTime, true);
+                if(Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !currentFrame.isFlipX())
+                    currentFrame.flip(true, false);
+                else if(Gdx.input.isKeyPressed(Input.Keys.LEFT) && currentFrame.isFlipX())
+                    currentFrame.flip(true, false);
+            } else {
+                currentFrame = standAnimation.getKeyFrame(stateTime, true);
+            }
 
-        if(currentFrame != null) {
-            batch.draw(currentFrame, getX(), getY(), getOriginX(), getOriginY(),
-                    getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
+            if(currentFrame != null) {
+                batch.draw(currentFrame, getX(), getY(), getOriginX(), getOriginY(),
+                        getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
+            }
         }
     }
 
@@ -134,7 +251,8 @@ public class Player extends SimpleActor {
 
         canStandUp = false;
         standUp = false;
-        body.setFixedRotation(false);
+        needRemoveBody = true;
+
         addAction(
             sequence(
                 delay(1),
@@ -156,10 +274,7 @@ public class Player extends SimpleActor {
             return false;
 
         if(canStandUp) {
-            setPosition(getX(), getY() + (getHeight() / 2) - (float) Math.cos(Math.toRadians(getRotation())) * getHeight() / 2);
-            if(getRotation() != 0)
-                setRotation(0);
-            body.setFixedRotation(true);
+            needRemoveRagdollBody = true;
             standUp = true;
             return true;
         } else
@@ -228,7 +343,40 @@ public class Player extends SimpleActor {
 
     @Override
     public void act(float delta) {
+        if(needRemoveBody) {
+            tmpVel.set(linVel);
+            physicsWorld.destroyBody(body);
+            body = null;
+            needRemoveBody = false;
+
+            createRagdollPhysicsActor();
+
+            for(Body b : ragdollBodies)
+                b.setLinearVelocity(tmpVel.scl(GameStage.WORLD_TO_BOX).scl(2));
+        }
+        if(needRemoveRagdollBody) {
+            for(Body b : ragdollBodies)
+                physicsWorld.destroyBody(b);
+            ragdollBodies.clear();
+            needRemoveRagdollBody = false;
+
+            createPhysicsActor(physicsWorld);
+            setPosition(getX(), getY() + (getHeight() / 2) - (float) Math.cos(Math.toRadians(getRotation())) * getHeight() / 2);
+            if(getRotation() != 0)
+                setRotation(0);
+        }
+
         super.act(delta);
+
+        if(ragdollBodies.size() > 0) {
+            Body torsoBody = ragdollBodies.get(0);
+            Vector2 pos = torsoBody.getPosition();
+            setRotation((float)Math.toDegrees(torsoBody.getAngle()), false);
+            linVel = torsoBody.getLinearVelocity();
+            pos.scl(GameStage.BOX_TO_WORLD).sub(physOffset);
+            linVel.scl(GameStage.BOX_TO_WORLD);
+            setPosition(pos.x, pos.y, false);
+        }
 
         playerGrounded = checkPlayerGroundedAndHack();
 
@@ -246,7 +394,7 @@ public class Player extends SimpleActor {
                     if(skate.getLinearVelocity().x > -MAX_VELOCITY * 3)
                         skate.applyForceToCenter(-2, 0, true);
                 } else if(getLinearVelocity().x > -MAX_VELOCITY)
-                    applyForceToCenter(-2, 0, true);
+                    applyForceToCenter(-3, 0, true);
             }
         } else if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             if(standUp()) {
@@ -254,7 +402,7 @@ public class Player extends SimpleActor {
                     if(skate.getLinearVelocity().x < MAX_VELOCITY * 3)
                         skate.applyForceToCenter(1, 0, true);
                 } else if(getLinearVelocity().x < MAX_VELOCITY)
-                    applyForceToCenter(2, 0, true);
+                    applyForceToCenter(3, 0, true);
             }
         }
     }

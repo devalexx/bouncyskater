@@ -101,24 +101,29 @@ public abstract class SimpleActor extends Actor {
     @Override
     public void act(float delta) {
         super.act(delta);
-        Vector2 pos = body.getPosition();
-        setRotation((float)Math.toDegrees(body.getAngle()), false);
-        linVel = body.getLinearVelocity();
-        pos.scl(GameStage.BOX_TO_WORLD).sub(physOffset);
-        linVel.scl(GameStage.BOX_TO_WORLD);
-        setPosition(pos.x, pos.y, false);
+        if(body != null) {
+            Vector2 pos = body.getPosition();
+            setRotation((float)Math.toDegrees(body.getAngle()), false);
+            linVel = body.getLinearVelocity();
+            pos.scl(GameStage.BOX_TO_WORLD).sub(physOffset);
+            linVel.scl(GameStage.BOX_TO_WORLD);
+            setPosition(pos.x, pos.y, false);
+        }
     }
 
     public void applyForceToCenter(Vector2 vec) {
-        body.applyForceToCenter(vec, true);
+        if(body != null)
+            body.applyForceToCenter(vec, true);
     }
 
     public void applyForceToCenter(float x, float y, boolean wake) {
-        body.applyForceToCenter(x, y, wake);
+        if(body != null)
+            body.applyForceToCenter(x, y, wake);
     }
 
     public void applyLinearImpulse(Vector2 pos, Vector2 point) {
-        body.applyLinearImpulse(pos, point, true);
+        if(body != null)
+            body.applyLinearImpulse(pos, point, true);
     }
 
     public Body getBody() {
