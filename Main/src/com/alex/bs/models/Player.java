@@ -228,7 +228,8 @@ public class Player extends SimpleActor {
                 sprite.setPosition(getX(), getY());
                 sprite.setRotation(getRotation());
                 sprite.draw(batch);
-            } else if(Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            } else if(skate == null &&
+                    (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.RIGHT))) {
                 currentFrame = runAnimation.getKeyFrame(stateTime, true);
                 if(Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !currentFrame.isFlipX())
                     currentFrame.flip(true, false);
@@ -400,7 +401,7 @@ public class Player extends SimpleActor {
             if(standUp()) {
                 if(skateJoint != null) {
                     if(skate.getLinearVelocity().x < MAX_VELOCITY * 3)
-                        skate.applyForceToCenter(1, 0, true);
+                        skate.applyForceToCenter(2, 0, true);
                 } else if(getLinearVelocity().x < MAX_VELOCITY)
                     applyForceToCenter(3, 0, true);
             }
