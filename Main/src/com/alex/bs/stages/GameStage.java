@@ -43,7 +43,8 @@ public class GameStage extends BasicStage {
         physicsWorld = new World(new Vector2(0, -9.8f), true);
 
         InputStream streamInit = Gdx.files.internal("data/levels/init.lua").read();
-        InputStream streamLevel = Gdx.files.internal("data/levels/1.lua").read();
+        //InputStream streamLevel = Gdx.files.internal("data/levels/editor/temp.lua").read();
+        InputStream streamLevel = Gdx.files.internal("data/levels/2.lua").read();
         Globals globals = JsePlatform.standardGlobals();
         Prototype prototype;
         try {
