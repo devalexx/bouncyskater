@@ -117,12 +117,7 @@ public class EditorManager {
             onCheckStr = accumStr.substring(accumStr.indexOf("function onCheck()\n") + 19,
                     accumStr.length() - 3);
 
-            SnapshotArray<Actor> children = stage.getRoot().getChildren();
-            for(int i = children.size - 1; i >= 0; i--) {
-                Actor a = children.get(i);
-                if(a instanceof SimpleActor)
-                    stage.removeActor(a);
-            }
+            clear();
             onCreateLuaFunc.call();
         } catch (IOException e) {
             System.err.println(e);
@@ -219,5 +214,14 @@ public class EditorManager {
         selectedActor = null;
         editorUI.setSelectedActor(null);
         stage.setSelectedActor(null);
+    }
+
+    public void clear() {
+        SnapshotArray<Actor> children = stage.getRoot().getChildren();
+        for(int i = children.size - 1; i >= 0; i--) {
+            Actor a = children.get(i);
+            if(a instanceof SimpleActor)
+                stage.removeActor(a);
+        }
     }
 }

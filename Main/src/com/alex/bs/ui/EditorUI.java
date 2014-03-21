@@ -172,6 +172,17 @@ public class EditorUI extends Table {
         });
         paneTable.add(loadButton);
 
+        paneTable.row();
+
+        TextButton clearButton = new TextButton("Clear", skin.get(TextButton.TextButtonStyle.class));
+        clearButton.addListener(new ClickListener(0) {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                editorManager.clear();
+            }
+        });
+        paneTable.add(clearButton);
+
         return table;
     }
 
@@ -242,6 +253,26 @@ public class EditorUI extends Table {
             }
         });
         paneTable.add(removeButton);
+
+        paneTable.row();
+
+        TextButton backButton = new TextButton("Back", skin.get(TextButton.TextButtonStyle.class));
+        backButton.addListener(new ClickListener(0) {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                selectedActor.toBack();
+            }
+        });
+        paneTable.add(backButton);
+
+        TextButton frontButton = new TextButton("Front", skin.get(TextButton.TextButtonStyle.class));
+        frontButton.addListener(new ClickListener(0) {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                selectedActor.toFront();
+            }
+        });
+        paneTable.add(frontButton);
 
         paneTable.row();
 
@@ -356,7 +387,7 @@ public class EditorUI extends Table {
             text = posTextField.getText();
             Vector2 v = new Vector2(Float.valueOf(text.substring(0, text.indexOf(","))),
                     Float.valueOf(text.substring(text.indexOf(",") + 1)));
-            selectedActor.setSize(v.x, v.y);
+            selectedActor.setPosition(v.x, v.y);
 
             text = angleTextField.getText();
             selectedActor.setRotation(Float.valueOf(text));
