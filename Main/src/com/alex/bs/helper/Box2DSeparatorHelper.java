@@ -89,7 +89,7 @@ public class Box2DSeparatorHelper {
      * */
 
     public static int Validate(List<Vector2> verticesVec) {
-        int i, n = verticesVec.size(), j, j2, i2, i3, ret = 0;
+        int i, n = verticesVec.size(), j, j2, i2, i3, ret = 0, m;
         float d;
         boolean fl, fl2 = false;
 
@@ -132,6 +132,31 @@ public class Box2DSeparatorHelper {
             }
 
         }
+
+        List<Vector2> vec = new ArrayList<Vector2>();
+        List<List<Vector2>> figsVec;
+
+        for (i=0; i < n; i++) {
+            vec.add(new Vector2(verticesVec.get(i).x * 30, verticesVec.get(i).y * 30));
+        }
+
+        if(ret == 0) {
+            figsVec = calcShapes(vec);
+            n = figsVec.size();
+
+            for (i=0; i<n; i++) {
+                verticesVec = new ArrayList<Vector2>();
+                vec = figsVec.get(i);
+                m = vec.size();
+                for (j=0; j<m; j++) {
+                    verticesVec.add(new Vector2(vec.get(j).x / 30, vec.get(j).y / 30));
+                }
+
+                if(verticesVec.size() > 8)
+                    ret = 4;
+            }
+        }
+
         return ret;
     }
 
