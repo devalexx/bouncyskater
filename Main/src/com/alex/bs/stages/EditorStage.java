@@ -257,4 +257,14 @@ public class EditorStage extends BasicStage {
     public void setSelectedActor(SimpleActor selectedActor) {
         this.selectedActor = selectedActor;
     }
+
+    @Override
+    public void setViewport(float width, float height) {
+        super.setViewport(width, height);
+        editorUI.layout();
+        editorUI.validate();
+        editorUI.needsLayout();
+        editorUI.invalidate();
+        editorUI.invalidateHierarchy();
+    }
 }

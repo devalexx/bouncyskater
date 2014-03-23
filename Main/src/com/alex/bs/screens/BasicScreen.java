@@ -22,16 +22,15 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 
 public abstract  class BasicScreen implements Screen {
-    protected Stage stage;
+    protected BasicStage stage;
     protected Camera camera;
     protected BSGame game;
     private ShapeRenderer shapeRenderer = new ShapeRenderer();
 
-    public BasicScreen(BSGame game, Stage stage) {
+    public BasicScreen(BSGame game, BasicStage stage) {
         this.game = game;
         this.stage = stage;
 
@@ -66,10 +65,7 @@ public abstract  class BasicScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        /*camera.viewportWidth = 800;
-        camera.viewportHeight = 480;
-        camera.position.set(0, -10, 0f);*/
-        //world.getSpriteBatch().setProjectionMatrix(camera.projection);
+        stage.setViewport(width, height);
     }
 
     @Override

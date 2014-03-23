@@ -17,7 +17,6 @@ import com.alex.bs.managers.EditorManager;
 import com.alex.bs.managers.ResourceManager;
 import com.alex.bs.models.SimpleActor;
 import com.alex.bs.stages.EditorStage;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -52,9 +51,9 @@ public class EditorUI extends Table {
         leftSplitPane.setSplitAmount(0.4f);
         final SplitPane rightSplitPane = new SplitPane(emptyTableRight, tableRight, false, skin.get("default-horizontal", SplitPane.SplitPaneStyle.class));
         rightSplitPane.setSplitAmount(0.6f);
-        topPanes.add(leftSplitPane).fill().expandY().width(Gdx.graphics.getWidth() / 2);
-        topPanes.add(rightSplitPane).fill().expandY().width(Gdx.graphics.getWidth() / 2);
-        topPanes.debug();
+        topPanes.add(leftSplitPane).left().fill().expand();
+        topPanes.add(rightSplitPane).right().fill().expand();
+
 
         SplitPane downSplitPane = new SplitPane(topPanes, tableBottom, true, skin.get("default-vertical", SplitPane.SplitPaneStyle.class)) {
             @Override
@@ -397,6 +396,6 @@ public class EditorUI extends Table {
     }
 
     public void setCursorPositionValue(Vector2 v) {
-        cursorPosValueLabel.setText(v.x + "," + v.y);
+        cursorPosValueLabel.setText(floatFormat.format(v.x) + "," + floatFormat.format(v.y));
     }
 }
