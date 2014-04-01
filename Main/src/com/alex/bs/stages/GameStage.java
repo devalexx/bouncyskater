@@ -16,6 +16,7 @@ package com.alex.bs.stages;
 import com.alex.bs.listener.GameContactListener;
 import com.alex.bs.models.Player;
 import com.alex.bs.models.Skate;
+import com.alex.bs.screens.GameScreen;
 import com.alex.bs.ui.GameUI;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.math.Vector2;
@@ -135,11 +136,17 @@ public class GameStage extends BasicStage {
         gameUI.setVisible(true);
         drawDebug();
 
-        gameUI.setPosition(getCamera().position.x - getCamera().viewportWidth / 2,
-                getCamera().position.y - getCamera().viewportHeight / 2);
+        getCamera().position.set(0, 0, 0);
+        getCamera().update();
+        getSpriteBatch().setProjectionMatrix(getCamera().combined);
+        gameUI.setPosition(-getCamera().viewportWidth / 2, -getCamera().viewportHeight / 2);
         getSpriteBatch().begin();
         gameUI.draw(getSpriteBatch(), 1);
         getSpriteBatch().end();
-        Table.drawDebug(this);
+
+        gameUI.setPosition((int)getCamera().position.x - getCamera().viewportWidth / 2,
+                (int)getCamera().position.y - getCamera().viewportHeight / 2);
+        if(debug)
+            Table.drawDebug(this);
     }
 }
