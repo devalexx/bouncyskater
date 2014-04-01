@@ -16,11 +16,12 @@ package com.alex.bs.stages;
 import com.alex.bs.listener.GameContactListener;
 import com.alex.bs.models.Player;
 import com.alex.bs.models.Skate;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import com.alex.bs.ui.GameUI;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaClosure;
 import org.luaj.vm2.LuaFunction;
@@ -36,6 +37,7 @@ public class GameStage extends BasicStage {
     private Player player;
     private boolean wonGame;
     private LuaFunction onCreateLuaFunc, onCheckLuaFunc;
+    private GameUI gameUI;
 
     public GameStage(float width, float height) {
         super(width, height, true);
@@ -74,6 +76,11 @@ public class GameStage extends BasicStage {
         } catch (IOException e) {
             System.err.println(e);
         }
+
+        gameUI = new GameUI(Gdx.app.getType() != Application.ApplicationType.Desktop);
+        gameUI.setFillParent(true);
+        addActor(gameUI);
+        gameUI.debug();
     }
 
     @Override
@@ -89,7 +96,7 @@ public class GameStage extends BasicStage {
         if(onCheckLuaFunc.call().toboolean(1) && !wonGame)
             wonGame = true;
 
-        if(wonGame == true)
+        if(wonGame)
             System.out.println("WON");
     }
 
@@ -123,7 +130,16 @@ public class GameStage extends BasicStage {
 
     @Override
     public void draw() {
+        gameUI.setVisible(false);
         super.draw();
+        gameUI.setVisible(true);
         drawDebug();
+
+        gameUI.setPosition(getCamera().position.x - getCamera().viewportWidth / 2,
+                getCamera().position.y - getCamera().viewportHeight / 2);
+        getSpriteBatch().begin();
+        gameUI.draw(getSpriteBatch(), 1);
+        getSpriteBatch().end();
+        Table.drawDebug(this);
     }
 }
