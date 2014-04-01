@@ -24,7 +24,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 
-public abstract  class BasicScreen implements Screen {
+public abstract class BasicScreen implements Screen {
     protected BasicStage stage;
     protected Camera camera;
     protected BSGame game;
@@ -70,11 +70,11 @@ public abstract  class BasicScreen implements Screen {
 
     @Override
     public void show() {
-        camera = stage.getCamera();
+        /*camera = stage.getCamera();
         camera.viewportHeight = 480;
         camera.viewportWidth = 800;
 
-        camera.position.set(camera.viewportWidth * .5f, camera.viewportHeight * .5f, 0f);
+        camera.position.set(camera.viewportWidth * .5f, camera.viewportHeight * .5f, 0f);*/
     }
 
     @Override

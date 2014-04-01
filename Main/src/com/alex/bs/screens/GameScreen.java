@@ -15,14 +15,23 @@ package com.alex.bs.screens;
 
 import com.alex.bs.BSGame;
 import com.alex.bs.stages.*;
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Scaling;
 
 public class GameScreen extends BasicScreen {
     private GameStage world;
+    public static int WIDTH = 800;
+    public static int HEIGHT = 480;
 
     public GameScreen(BSGame game) {
-        super(game, new GameStage(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+        super(game, new GameStage(WIDTH, HEIGHT));
         world = (GameStage) stage;
         this.game = game;
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        Vector2 s = Scaling.fit.apply(width, height, 800, 480);
+        stage.setViewport(s.x, s.y);
     }
 }

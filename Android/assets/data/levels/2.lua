@@ -90,6 +90,11 @@ function onBeginContact(contact)
     if player:getPosition().x > 150 then
         mesh_4:getBody():setLinearVelocity(1, 0)
     end
+
+    if contact:getFixtureA():getBody() == player:getBody() and
+            stage:getActorByBody(contact:getFixtureB():getBody()):getType() == TYPE.COIN then
+        stage:safeRemoveActor(stage:getActorByBody(contact:getFixtureB():getBody()))
+    end
 end
 
 function onEndContact(contact)
@@ -97,5 +102,6 @@ end
 function onEndContact(contact)
 end
 function onCheck()
-    return false
+    coins = stage:getGameActorsByType(TYPE.COIN)
+    return coins:size() == 0
 end

@@ -22,9 +22,9 @@ public class DesktopStarter {
         cfg.title = "Bouncy Skate";
         cfg.useGL20 = true;
         //cfg.height = 240; cfg.width = 320;
-        //cfg.height = 320; cfg.width = 480;
+        cfg.height = 320; cfg.width = 480;
         //cfg.height = 480; cfg.width = 640;
-        cfg.height = 480; cfg.width = 800;
+        //cfg.height = 480; cfg.width = 800;
         //cfg.height = 480; cfg.width = 854;
         //cfg.height = 640; cfg.width = 960;
         //cfg.height = 600; cfg.width = 1024;

@@ -78,7 +78,7 @@ public class GameStage extends BasicStage {
 
     @Override
     public void act(float delta) {
-        getCamera().position.set(player.getX(), player.getY(), 0f);
+        getCamera().position.set(player.getX(), player.getY() + player.getHeight(), 0f);
         getCamera().update();
         getSpriteBatch().setProjectionMatrix(getCamera().projection);
 
