@@ -78,7 +78,7 @@ public class GameStage extends BasicStage {
             System.err.println(e);
         }
 
-        gameUI = new GameUI(Gdx.app.getType() != Application.ApplicationType.Desktop);
+        gameUI = new GameUI(this, Gdx.app.getType() != Application.ApplicationType.Desktop);
         gameUI.setFillParent(true);
         addActor(gameUI);
         gameUI.debug();
