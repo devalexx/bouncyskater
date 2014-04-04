@@ -13,7 +13,7 @@
  ******************************************************************************/
 package com.alex.bs.models;
 
-import com.alex.bs.helper.Box2DSeparatorHelper;
+import com.alex.bs.helper.*;
 import com.alex.bs.managers.ResourceManager;
 import com.alex.bs.stages.GameStage;
 import com.badlogic.gdx.graphics.Texture;
@@ -72,9 +72,8 @@ public class Mesh extends SimpleActor {
         for(Vector2 v : vertices)
             tmpVertices.add(v.cpy().scl(GameStage.WORLD_TO_BOX));
 
-        Box2DSeparatorHelper separatorHelper = new Box2DSeparatorHelper();
-        if(separatorHelper.Validate(tmpVertices) != 0) {
-            System.err.println("Can't separate vertices: " + separatorHelper.Validate(tmpVertices));
+        if(SeparatorHelper.defaultSeparatorHelper.validate(tmpVertices) != 0) {
+            System.err.println("Can't separate vertices: " + SeparatorHelper.defaultSeparatorHelper.validate(tmpVertices));
             return;
         }
 
@@ -103,7 +102,7 @@ public class Mesh extends SimpleActor {
         fixtureDef.filter.categoryBits = CATEGORY_SCENERY;
         fixtureDef.filter.maskBits = MASK_SCENERY;
 
-        separatorHelper.Separate(body, fixtureDef, tmpVertices, 30);
+        SeparatorHelper.defaultSeparatorHelper.separate(body, fixtureDef, tmpVertices, 30);
 
         super.createPhysicsActor(physicsWorld);
     }

@@ -13,7 +13,7 @@
  ******************************************************************************/
 package com.alex.bs.managers;
 
-import com.alex.bs.helper.Box2DSeparatorHelper;
+import com.alex.bs.helper.*;
 import com.alex.bs.listener.GameContactListener;
 import com.alex.bs.models.*;
 import com.alex.bs.stages.EditorStage;
@@ -38,7 +38,7 @@ public class EditorManager {
     private EditorUI editorUI;
     private SimpleActor.TYPE creatingObject = SimpleActor.TYPE.NONE;
     private ShapeRenderer shapeRenderer;
-    private List<Vector2> vertices = new ArrayList<Vector2>();
+    private List<Vector2> newMeshVertices = new ArrayList<Vector2>();
     public String onBeginContactStr, onEndContactStr, onCheckStr;
 
     public EditorManager(EditorStage stage, ShapeRenderer shapeRenderer) {
@@ -110,6 +110,7 @@ public class EditorManager {
             }
 
             String accumStr = file.readString();
+            accumStr = accumStr.replace("\r", "");
             onBeginContactStr = accumStr.substring(accumStr.indexOf("function onBeginContact(contact)\n") + 33,
                     accumStr.indexOf("end\nfunction", accumStr.indexOf("function onBeginContact(contact)\n")));
             onEndContactStr = accumStr.substring(accumStr.indexOf("function onEndContact(contact)\n") + 31,
@@ -134,21 +135,21 @@ public class EditorManager {
         if(creatingObject == SimpleActor.TYPE.MESH) {
             if(button == 0) {
                 Vector2 pos = stage.screenToStageCoordinates(new Vector2(screenX, screenY));
-                vertices.add(pos);
+                newMeshVertices.add(pos);
             } else if(button == 2) {
-                Mesh mesh = new Mesh(vertices);
+                Mesh mesh = new Mesh(newMeshVertices);
                 stage.addActor(mesh);
                 creatingObject = SimpleActor.TYPE.NONE;
-                vertices.clear();
+                newMeshVertices.clear();
                 mesh.setName("mesh_" + counter++);
                 selectedActor = mesh;
                 editorUI.setSelectedActor(selectedActor);
                 stage.setSelectedActor(selectedActor);
             } else {
-                if(vertices.size() == 0)
+                if(newMeshVertices.size() == 0)
                     creatingObject = SimpleActor.TYPE.NONE;
                 else
-                    vertices.remove(vertices.size() - 1);
+                    newMeshVertices.remove(newMeshVertices.size() - 1);
             }
         }
     }
@@ -160,16 +161,24 @@ public class EditorManager {
     public void draw() {
         shapeRenderer.identity();
 
-        /*Vector2 pos = stage.screenToStageCoordinates(new Vector2(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2));
-        shapeRenderer.translate(pos.x, pos.y, 0);*/
-        if(Box2DSeparatorHelper.Validate(vertices) == 0)
+        if(SeparatorHelper.defaultSeparatorHelper.validate(newMeshVertices) == 0) {
             shapeRenderer.setColor(Color.GREEN);
-        else
+            List<List<Vector2>> listOfList = SeparatorHelper.defaultSeparatorHelper.getSeparated(newMeshVertices, 30);
+
+            for(List<Vector2> polygonVertices : listOfList) {
+                for (int i = 0; i < polygonVertices.size(); i++) {
+                    Vector2 v1 = polygonVertices.get(i);
+                    Vector2 v2 = i >= polygonVertices.size() - 1 ? polygonVertices.get(0) : polygonVertices.get(i + 1);
+                    shapeRenderer.line(v1.x, v1.y, v2.x, v2.y);
+                }
+            }
+        } else {
             shapeRenderer.setColor(Color.RED);
-        for(int i = 0; i < vertices.size(); i++) {
-            Vector2 v1 = vertices.get(i);
-            Vector2 v2 = i >= vertices.size() - 1 ? vertices.get(0) : vertices.get(i + 1);
-            shapeRenderer.line(v1.x, v1.y, v2.x, v2.y);
+            for (int i = 0; i < newMeshVertices.size(); i++) {
+                Vector2 v1 = newMeshVertices.get(i);
+                Vector2 v2 = i >= newMeshVertices.size() - 1 ? newMeshVertices.get(0) : newMeshVertices.get(i + 1);
+                shapeRenderer.line(v1.x, v1.y, v2.x, v2.y);
+            }
         }
     }
 

@@ -30,7 +30,7 @@ import java.util.*;
 *
 */
 
-public class Box2DSeparatorHelper {
+public class AntoanAngelovSeparatorHelper implements SeparatorHelper {
     /**
      * Separates a non-convex polygon into convex polygons and adds them as fixtures to the <code>body</code> parameter.<br/>
      * There are some rules you should follow (otherwise you might get unexpected results) :
@@ -46,7 +46,7 @@ public class Box2DSeparatorHelper {
      * @param scale <code>[optional]</code> The scale which you use to draw shapes in Box2D. The bigger the scale, the better the precision. The default value is 30.
      * */
 
-    public static void Separate(Body body, FixtureDef fixtureDef, List<Vector2> verticesVec, float scale) {
+    public void separate(Body body, FixtureDef fixtureDef, List<Vector2> verticesVec, float scale) {
         int i, n = verticesVec.size(), j, m;
         List<Vector2> vec = new ArrayList<Vector2>();
         List<List<Vector2>> figsVec = new ArrayList<List<Vector2>>();
@@ -74,6 +74,33 @@ public class Box2DSeparatorHelper {
         }
     }
 
+    public List<List<Vector2>> getSeparated(List<Vector2> verticesVec, float scale) {
+        int i, n = verticesVec.size(), j, m;
+        List<Vector2> vec = new ArrayList<Vector2>();
+        List<List<Vector2>> figsVec = new ArrayList<List<Vector2>>();
+        PolygonShape polyShape;
+
+        for (i=0; i < n; i++) {
+            vec.add(new Vector2(verticesVec.get(i).x * scale, verticesVec.get(i).y * scale));
+        }
+
+        figsVec = calcShapes(vec);
+        n = figsVec.size();
+
+        List<List<Vector2>> listOfList = new ArrayList<List<Vector2>>();
+        for (i=0; i<n; i++) {
+            List<Vector2> vertices = new ArrayList<Vector2>();
+            vec = figsVec.get(i);
+            m = vec.size();
+            for (j=0; j<m; j++) {
+                vertices.add(new Vector2(vec.get(j).x / scale, vec.get(j).y / scale));
+            }
+            listOfList.add(vertices);
+        }
+
+        return listOfList;
+    }
+
     /**
      * Checks whether the vertices in <code>verticesVec</code> can be properly distributed into the new fixtures (more specifically, it makes sure there are no overlapping segments and the vertices are in clockwise order). 
      * It is recommended that you use this method for debugging only, because it may cost more CPU usage.
@@ -88,7 +115,7 @@ public class Box2DSeparatorHelper {
      * </ul> 
      * */
 
-    public static int Validate(List<Vector2> verticesVec) {
+    public int validate(List<Vector2> verticesVec) {
         int i, n = verticesVec.size(), j, j2, i2, i3, ret = 0, m;
         float d;
         boolean fl, fl2 = false;
@@ -364,6 +391,6 @@ public class Box2DSeparatorHelper {
     }
 
     private static void err() {
-        throw new Error("A problem has occurred. Use the Validate() method to see where the problem is.");
+        throw new Error("A problem has occurred. Use the validate() method to see where the problem is.");
     }
 }
