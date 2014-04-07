@@ -14,6 +14,7 @@
 package com.alex.bs.stages;
 
 import com.alex.bs.listener.GameContactListener;
+import com.alex.bs.managers.GameManager;
 import com.alex.bs.models.Player;
 import com.alex.bs.models.Skate;
 import com.alex.bs.screens.GameScreen;
@@ -34,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class GameStage extends BasicStage {
+    private final GameManager gameManager;
     private Skate skate;
     private Player player;
     private boolean wonGame;
@@ -45,43 +47,14 @@ public class GameStage extends BasicStage {
 
         physicsWorld = new World(new Vector2(0, -9.8f), true);
 
-        InputStream streamInit = Gdx.files.internal("data/levels/init.lua").read();
-        //InputStream streamLevel = Gdx.files.internal("data/levels/editor/temp.lua").read();
-        InputStream streamLevel = Gdx.files.internal("data/levels/2.lua").read();
-        Globals globals = JsePlatform.standardGlobals();
-        Prototype prototype;
-        try {
-            prototype = globals.loadPrototype(streamInit, "init_script", "t");
-            LuaClosure closure = new LuaClosure(prototype, globals);
-            closure.call();
-
-            prototype = globals.loadPrototype(streamLevel, "level_script", "t");
-            closure = new LuaClosure(prototype, globals);
-            closure.call();
-
-            globals.rawset("stage", CoerceJavaToLua.coerce(this));
-            onCreateLuaFunc = (LuaFunction) globals.rawget("onCreate");
-            onCheckLuaFunc = (LuaFunction) globals.rawget("onCheck");
-
-            try {
-                LuaFunction onBeginContactLuaFunc = (LuaFunction) globals.rawget("onBeginContact");
-                LuaFunction onEndContactLuaFunc = (LuaFunction) globals.rawget("onEndContact");
-
-                GameContactListener contactListener = new GameContactListener(onBeginContactLuaFunc, onEndContactLuaFunc);
-                physicsWorld.setContactListener(contactListener);
-            } catch (Exception e) {
-                System.err.println(e);
-            }
-
-            onCreateLuaFunc.call();
-        } catch (IOException e) {
-            System.err.println(e);
-        }
-
-        gameUI = new GameUI(this, Gdx.app.getType() != Application.ApplicationType.Desktop);
+        gameManager = new GameManager(this);
+        gameUI = new GameUI(this, gameManager, Gdx.app.getType() != Application.ApplicationType.Desktop);
         gameUI.setFillParent(true);
         addActor(gameUI);
         gameUI.debug();
+        gameManager.setUI(gameUI);
+
+        gameManager.load("2");
     }
 
     @Override
@@ -148,5 +121,13 @@ public class GameStage extends BasicStage {
                 (int)getCamera().position.y - getCamera().viewportHeight / 2);
         if(debug)
             Table.drawDebug(this);
+    }
+
+    public void setOnCreateLuaFunc(LuaFunction onCreateLuaFunc) {
+        this.onCreateLuaFunc = onCreateLuaFunc;
+    }
+
+    public void setOnCheckLuaFunc(LuaFunction onCheckLuaFunc) {
+        this.onCheckLuaFunc = onCheckLuaFunc;
     }
 }

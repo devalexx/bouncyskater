@@ -13,7 +13,7 @@
  ******************************************************************************/
 package com.alex.bs.ui;
 
-import com.alex.bs.managers.ResourceManager;
+import com.alex.bs.managers.*;
 import com.alex.bs.stages.GameStage;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -23,10 +23,12 @@ public class GameUI extends Table {
     private final Skin skin;
     private final Window menuWindow;
     private final GameStage stage;
+    private final GameManager gameManager;
 
-    public GameUI(GameStage gameStage, boolean needUIButtons) {
+    public GameUI(GameStage gameStage, GameManager gameManager, boolean needUIButtons) {
         skin = ResourceManager.getInstance().getSkin();
         stage = gameStage;
+        this.gameManager = gameManager;
 
         TextButton menuTextButton = new TextButton("Main Menu", skin);
         add(menuTextButton).left();
@@ -73,16 +75,30 @@ public class GameUI extends Table {
 
         window.row();
 
-        window.add(new TextButton("Prev", skin));
+        TextButton prevTextButton = new TextButton("Prev", skin);
+        window.add(prevTextButton);
         TextButton closeTextButton = new TextButton("Close", skin);
         window.add(closeTextButton);
-        window.add(new TextButton("Next", skin));
+        TextButton nextTextButton = new TextButton("Next", skin);
+        window.add(nextTextButton);
         window.pack();
 
         closeTextButton.addListener(new ClickListener(0) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 removeActor(menuWindow);
+            }
+        });
+        prevTextButton.addListener(new ClickListener(0) {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                gameManager.load(-1);
+            }
+        });
+        nextTextButton.addListener(new ClickListener(0) {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                gameManager.load(1);
             }
         });
 
