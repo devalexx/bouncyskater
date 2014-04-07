@@ -3,6 +3,20 @@ pack.png
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
+black
+  rotate: false
+  xy: 358, 830
+  size: 8, 8
+  orig: 8, 8
+  offset: 0, 0
+  index: -1
+black_circle
+  rotate: false
+  xy: 2, 2
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
 player
   rotate: false
   xy: 2, 68
@@ -33,7 +47,7 @@ wall
   index: -1
 wheel
   rotate: false
-  xy: 2, 2
+  xy: 292, 774
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
