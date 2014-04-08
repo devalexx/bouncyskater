@@ -49,6 +49,9 @@ public class GameManager {
     }
 
     public void load(String name) {
+        if(name == null || !availableLevels.contains(name))
+            name = availableLevels.getFirst();
+
         InputStream streamInit = Gdx.files.internal("data/levels/system/init.lua").read();
         InputStream streamLevel = Gdx.files.internal("data/levels/" + name + ".lua").read();
         Globals globals = JsePlatform.standardGlobals();
