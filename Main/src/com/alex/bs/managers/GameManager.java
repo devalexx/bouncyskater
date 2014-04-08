@@ -13,18 +13,11 @@
  ******************************************************************************/
 package com.alex.bs.managers;
 
-import com.alex.bs.helper.SeparatorHelper;
 import com.alex.bs.listener.GameContactListener;
-import com.alex.bs.models.*;
 import com.alex.bs.stages.*;
 import com.alex.bs.ui.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.utils.SnapshotArray;
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.jse.*;
 
@@ -44,11 +37,19 @@ public class GameManager {
             availableLevels.add(fileHandle.nameWithoutExtension());
     }
 
+    public GameStage getStage() {
+        return stage;
+    }
+
     public void setUI(GameUI gameUI) {
         this.gameUI = gameUI;
     }
 
-    public void load(String name) {
+    public GameUI getGameUI() {
+        return gameUI;
+    }
+
+    public void loadLvl(String name) {
         if(name == null || !availableLevels.contains(name))
             name = availableLevels.getFirst();
 
@@ -86,13 +87,30 @@ public class GameManager {
         }
     }
 
-    public void load(int diff) {
+    public void loadLvl(int diff) {
         String lvl = availableLevels.getFirst();
         try {
             if(currentLevelName != null)
                 lvl = String.valueOf(Integer.parseInt(currentLevelName) + diff);
         } catch(Exception e) {}
 
-        load(lvl);
+        loadLvl(lvl);
+    }
+
+    public boolean hasLvl(int diff) {
+        try {
+            if(currentLevelName != null)
+                return availableLevels.contains(String.valueOf(Integer.parseInt(currentLevelName) + diff));
+        } catch(Exception e) {}
+
+        return false;
+    }
+
+    public void win() {
+        getGameUI().showGameOverWindow(true);
+    }
+
+    public void fail() {
+        getGameUI().showGameOverWindow(false);
     }
 }

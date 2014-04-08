@@ -13,34 +13,26 @@
  ******************************************************************************/
 package com.alex.bs.stages;
 
-import com.alex.bs.listener.GameContactListener;
 import com.alex.bs.managers.GameManager;
 import com.alex.bs.models.Player;
 import com.alex.bs.models.Skate;
-import com.alex.bs.screens.GameScreen;
 import com.alex.bs.ui.GameUI;
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import org.luaj.vm2.Globals;
-import org.luaj.vm2.LuaClosure;
 import org.luaj.vm2.LuaFunction;
-import org.luaj.vm2.Prototype;
-import org.luaj.vm2.lib.jse.CoerceJavaToLua;
-import org.luaj.vm2.lib.jse.JsePlatform;
-
-import java.io.IOException;
-import java.io.InputStream;
 
 public class GameStage extends BasicStage {
     private final GameManager gameManager;
     private Skate skate;
     private Player player;
-    private boolean wonGame;
+    private boolean endGame, freeze;
     private LuaFunction onCreateLuaFunc, onCheckLuaFunc;
     private GameUI gameUI;
+    public static float time;
 
     public GameStage(float width, float height) {
         super(width, height, true);
@@ -54,24 +46,37 @@ public class GameStage extends BasicStage {
         gameUI.debug();
         gameManager.setUI(gameUI);
 
-        gameManager.load("2");
+        gameManager.loadLvl("2");
     }
 
     @Override
     public void act(float delta) {
+        if(!freeze) {
+            physicsWorld.step(1 / 60f, 8, 3);
+            time += delta;
+        }
+
+        super.act(delta);
+
         getCamera().position.set(player.getX(), player.getY() + player.getHeight(), 0f);
         getCamera().update();
         getSpriteBatch().setProjectionMatrix(getCamera().projection);
 
-        physicsWorld.step(1 / 60f, 8, 3);
+        int check = onCheckLuaFunc.call().toint(1);
+        if(check != 0 && !endGame) {
+            endGame = true;
+            if(check == 1)
+                gameManager.win();
+            else
+                gameManager.fail();
 
-        super.act(delta);
-
-        if(onCheckLuaFunc.call().toboolean(1) && !wonGame)
-            wonGame = true;
-
-        if(wonGame)
-            System.out.println("WON");
+            addAction(Actions.delay(1, Actions.run(new Runnable() {
+                @Override
+                public void run() {
+                    freeze = true;
+                }
+            })));
+        }
     }
 
     @Override

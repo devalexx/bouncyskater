@@ -15,13 +15,15 @@ package com.alex.bs.ui;
 
 import com.alex.bs.managers.*;
 import com.alex.bs.stages.GameStage;
+import com.alex.bs.ui.widgets.*;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class GameUI extends Table {
     private final Skin skin;
-    private final Window menuWindow;
+    private final MenuWindow menuWindow;
+    private final GameOverWindow gameOverWindow;
     private final GameStage stage;
     private final GameManager gameManager;
 
@@ -55,53 +57,21 @@ public class GameUI extends Table {
             touchpad.setVisible(false);
         }
 
-        menuWindow = createMenuWindow();
+        menuWindow = new MenuWindow("Menu", skin, gameManager);
         menuWindow.setMovable(false);
-        menuWindow.debug();
+
+        gameOverWindow = new GameOverWindow("Game Over", skin, gameManager);
+        gameOverWindow.setMovable(false);
 
         menuTextButton.addListener(new ClickListener(0) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                addActor(menuWindow);
-                menuWindow.setPosition(getWidth() / 2 - menuWindow.getWidth() / 2,
-                        getHeight() / 2 - menuWindow.getHeight() / 2);
+                menuWindow.show();
             }
         });
     }
 
-    public Window createMenuWindow() {
-        Window window = new Window("Menu", skin);
-        window.add(new Label("Blablabla", skin)).colspan(2);
-
-        window.row();
-
-        TextButton prevTextButton = new TextButton("Prev", skin);
-        window.add(prevTextButton);
-        TextButton closeTextButton = new TextButton("Close", skin);
-        window.add(closeTextButton);
-        TextButton nextTextButton = new TextButton("Next", skin);
-        window.add(nextTextButton);
-        window.pack();
-
-        closeTextButton.addListener(new ClickListener(0) {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                removeActor(menuWindow);
-            }
-        });
-        prevTextButton.addListener(new ClickListener(0) {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                gameManager.load(-1);
-            }
-        });
-        nextTextButton.addListener(new ClickListener(0) {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                gameManager.load(1);
-            }
-        });
-
-        return window;
+    public void showGameOverWindow(boolean won) {
+        gameOverWindow.show(won);
     }
 }
