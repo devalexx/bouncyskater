@@ -15,7 +15,7 @@ package com.alex.bs.stages;
 
 import com.alex.bs.models.SimpleActor;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
@@ -35,6 +35,7 @@ public abstract class BasicStage extends Stage {
     private HashMap<Body, SimpleActor> physicsActorMap = new HashMap<Body, SimpleActor>();
     private List<SimpleActor> actorsToRemove = new LinkedList<SimpleActor>();
     private List<SimpleActor> gameActors = new LinkedList<SimpleActor>();
+    private Rectangle aabb = new Rectangle();
 
     protected BasicStage(float width, float height, boolean keepAspectRatio) {
         super(width, height, keepAspectRatio);
@@ -121,5 +122,13 @@ public abstract class BasicStage extends Stage {
                 actors.add(sa);
 
         return actors;
+    }
+
+    public boolean isInStageRect(Actor actor) {
+        return aabb.contains(actor.getX(), actor.getY());
+    }
+
+    public void setAABB(float x1, float y1, float x2, float y2) {
+        aabb.set(x1, y1, x2-x1, y2-y1);
     }
 }
