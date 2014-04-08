@@ -1,4 +1,4 @@
-function onCreate()
+function addObjects()
     ------------------
     wall_3 = luajava.new(Wall)
     wall_3:setSpriteAndBodyBox(120.0, 40.0)
@@ -93,6 +93,10 @@ function onCreate()
     stage:addActor(coin_7)
 
 end
+function onCreate()
+    addObjects()
+    stage:setAABB(-100, 30, 750, 450)
+end
 function onBeginContact(contact)
     coin = nil
     if contact:getFixtureA():getBody() == player:getBody() and
@@ -121,5 +125,13 @@ function onEndContact(contact)
 end
 function onCheck()
     coins = stage:getGameActorsByType(TYPE.COIN)
-    return coins:size() == 1
+    if coins:size() == 1 then
+        return 1
+    end
+
+    if not stage:isInStageRect(player) then
+        return -1
+    end
+
+    return 0
 end

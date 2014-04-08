@@ -39,7 +39,7 @@ public class EditorManager {
     private SimpleActor.TYPE creatingObject = SimpleActor.TYPE.NONE;
     private ShapeRenderer shapeRenderer;
     private List<Vector2> newMeshVertices = new ArrayList<Vector2>();
-    public String onBeginContactStr, onEndContactStr, onCheckStr;
+    public String onBeginContactStr, onEndContactStr, onCheckStr, onCreateStr;
 
     public EditorManager(EditorStage stage, ShapeRenderer shapeRenderer) {
         this.stage = stage;
@@ -76,7 +76,7 @@ public class EditorManager {
 
     public void save(String text) {
         FileHandle file = Gdx.files.local("data/levels/editor/" + text);
-        file.writeString(new ExportManager(stage, onCheckStr, onBeginContactStr, onEndContactStr).export(), false);
+        file.writeString(new ExportManager(stage, onCreateStr, onCheckStr, onBeginContactStr, onEndContactStr).export(), false);
     }
 
     public boolean load(String text) {
@@ -84,7 +84,7 @@ public class EditorManager {
         if(!file.exists())
             return false;
 
-        InputStream streamInit = Gdx.files.internal("data/levels/init.lua").read();
+        InputStream streamInit = Gdx.files.internal("data/levels/system/init.lua").read();
         InputStream streamLevel = file.read();
         Globals globals = JsePlatform.standardGlobals();
         Prototype prototype;
@@ -117,6 +117,8 @@ public class EditorManager {
                     accumStr.indexOf("end\nfunction", accumStr.indexOf("function onEndContact(contact)\n")));
             onCheckStr = accumStr.substring(accumStr.indexOf("function onCheck()\n") + 19,
                     accumStr.length() - 3);
+            onCreateStr = accumStr.substring(accumStr.indexOf("function onCreate()\n") + 20,
+                    accumStr.indexOf("end\nfunction", accumStr.indexOf("function onCreate()\n")));
 
             clear();
             onCreateLuaFunc.call();

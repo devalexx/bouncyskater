@@ -1,4 +1,4 @@
-function onCreate()
+function addObjects()
     ------------------
     mesh_3 = luajava.new(Mesh)
     mesh_3:addVertex(359.99997, 72.0)
@@ -86,6 +86,10 @@ function onCreate()
     stage:addActor(coin_4)
 
 end
+function onCreate()
+    addObjects()
+    stage:setAABB(-500, 250, 1050, 800)
+end
 function onBeginContact(contact)
     if player:getPosition().x > 150 then
         mesh_4:getBody():setLinearVelocity(1, 0)
@@ -103,5 +107,13 @@ function onEndContact(contact)
 end
 function onCheck()
     coins = stage:getGameActorsByType(TYPE.COIN)
-    return coins:size() == 0
+    if coins:size() == 0 then
+        return 1
+    end
+
+    if not stage:isInStageRect(player) then
+        return -1
+    end
+
+    return 0
 end

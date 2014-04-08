@@ -20,17 +20,19 @@ import com.badlogic.gdx.scenes.scene2d.*;
 
 public class ExportManager {
     private Stage stage;
-    private String onCheckStr, onBeginContactStr, onEndContactStr;
+    private String onCreateStr, onCheckStr, onBeginContactStr, onEndContactStr;
 
-    public ExportManager(Stage stage, String onCheckStr, String onBeginContactStr, String onEndContactStr) {
+    public ExportManager(Stage stage, String onCreateStr, String onCheckStr, String onBeginContactStr,
+                String onEndContactStr) {
         this.stage = stage;
+        this.onCreateStr = onCreateStr;
         this.onCheckStr = onCheckStr;
         this.onBeginContactStr = onBeginContactStr;
         this.onEndContactStr = onEndContactStr;
     }
 
     public String export() {
-        String accum = "function onCreate()\n";
+        String accum = "function addObjects()\n";
 
         for(Actor a : stage.getRoot().getChildren()) {
             if(!(a instanceof SimpleActor))
@@ -41,14 +43,17 @@ public class ExportManager {
         }
 
         accum += "end\n" +
+                "function onCreate()\n" +
+                (onCreateStr != null && onCreateStr.length() > 0 ? onCreateStr : "    addObjects()\n") +
+                "end\n" +
                 "function onBeginContact(contact)\n" +
-                onBeginContactStr +
+                (onBeginContactStr != null ? onBeginContactStr : "") +
                 "end\n" +
                 "function onEndContact(contact)\n" +
-                onEndContactStr +
+                (onEndContactStr != null ? onEndContactStr : "") +
                 "end\n" +
                 "function onCheck()\n" +
-                onCheckStr +
+                (onCheckStr != null ? onCheckStr : "") +
                 "end";
 
 
