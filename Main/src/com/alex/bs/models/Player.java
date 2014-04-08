@@ -38,7 +38,6 @@ public class Player extends SimpleActor {
     private Animation standAnimation, runAnimation;
     private TextureRegion[] standFrames = new TextureRegion[FRAME_COLS];
     private TextureRegion[] runFrames = new TextureRegion[FRAME_COLS];
-    private float stateTime = 0;
     private boolean needRemoveBody = false, needRemoveRagdollBody = false;
     private Sprite spriteBlack, spriteBlackCircle;
     private Vector2 tmpVel = new Vector2();
@@ -228,7 +227,6 @@ public class Player extends SimpleActor {
                 sprite.draw(batch);
             }
         } else {
-            stateTime += Gdx.graphics.getDeltaTime();
             TextureRegion currentFrame = null;
             if(!standUp) {
                 sprite.setPosition(getX(), getY());
@@ -236,13 +234,13 @@ public class Player extends SimpleActor {
                 sprite.draw(batch);
             } else if(skate == null &&
                     (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.RIGHT))) {
-                currentFrame = runAnimation.getKeyFrame(stateTime, true);
+                currentFrame = runAnimation.getKeyFrame(GameStage.time, true);
                 if(Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !currentFrame.isFlipX())
                     currentFrame.flip(true, false);
                 else if(Gdx.input.isKeyPressed(Input.Keys.LEFT) && currentFrame.isFlipX())
                     currentFrame.flip(true, false);
             } else {
-                currentFrame = standAnimation.getKeyFrame(stateTime, true);
+                currentFrame = standAnimation.getKeyFrame(GameStage.time, true);
             }
 
             if(currentFrame != null) {
