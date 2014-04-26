@@ -46,7 +46,7 @@ public class GameStage extends BasicStage {
         gameUI.debug();
         gameManager.setUI(gameUI);
 
-        gameManager.loadLvl("2");
+        gameManager.loadLvl("3");
     }
 
     @Override

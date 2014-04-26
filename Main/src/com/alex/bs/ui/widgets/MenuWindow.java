@@ -20,7 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class MenuWindow extends Window {
     private GameManager gameManager;
-    TextButton prevTextButton, closeTextButton, nextTextButton;
+    private TextButton prevTextButton, closeTextButton, nextTextButton, restartTextButton;
 
     public MenuWindow(String title, Skin skin, GameManager manager) {
         super(title, skin);
@@ -33,6 +33,8 @@ public class MenuWindow extends Window {
         add(prevTextButton);
         closeTextButton = new TextButton("Close", skin);
         add(closeTextButton);
+        restartTextButton = new TextButton("Restart", skin);
+        add(restartTextButton);
         nextTextButton = new TextButton("Next", skin);
         add(nextTextButton);
         pack();
@@ -59,6 +61,13 @@ public class MenuWindow extends Window {
             }
         });
         nextTextButton.setDisabled(true);
+        restartTextButton.addListener(new ClickListener(0) {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                gameManager.loadLvl(0);
+                hide();
+            }
+        });
     }
 
     public void show() {

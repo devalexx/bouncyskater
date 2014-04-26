@@ -94,6 +94,7 @@ public class ExportManager {
             s += "    " + name + ":setBodyType(BodyType." + sa.getBodyType() + ")\n";
             if(sa.getName() != null)
                 s += "    " + name + ":setName('" + sa.getName() + "')\n";
+            s += "    " + name + ":setVisible(" + sa.isVisible() + ")\n";
             s += "    stage:addActor(" + name + ")\n\n";
             return s;
         }

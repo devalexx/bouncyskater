@@ -99,6 +99,7 @@ public class Mesh extends SimpleActor {
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.friction = 10.4f;
+        fixtureDef.density = 0.1f;
         fixtureDef.filter.categoryBits = CATEGORY_SCENERY;
         fixtureDef.filter.maskBits = MASK_SCENERY;
 
