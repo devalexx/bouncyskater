@@ -21,6 +21,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.SnapshotArray;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -130,5 +131,15 @@ public abstract class BasicStage extends Stage {
 
     public void setAABB(float x1, float y1, float x2, float y2) {
         aabb.set(x1, y1, x2-x1, y2-y1);
+    }
+
+    public void reset() {
+        SnapshotArray<Actor> children = getRoot().getChildren();
+        for(int i = children.size - 1; i >= 0; i--) {
+            Actor a = children.get(i);
+            if(a instanceof SimpleActor)
+                removeActor(a);
+        }
+        getRoot().clearActions();
     }
 }

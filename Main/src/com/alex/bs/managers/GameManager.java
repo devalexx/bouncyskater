@@ -52,6 +52,7 @@ public class GameManager {
     public void loadLvl(String name) {
         if(name == null || !availableLevels.contains(name))
             name = availableLevels.getFirst();
+        currentLevelName = name;
 
         InputStream streamInit = Gdx.files.internal("data/levels/system/init.lua").read();
         InputStream streamLevel = Gdx.files.internal("data/levels/" + name + ".lua").read();
@@ -81,6 +82,7 @@ public class GameManager {
                 System.err.println(e);
             }
 
+            stage.reset();
             onCreateLuaFunc.call();
         } catch (IOException e) {
             System.err.println(e);

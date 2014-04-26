@@ -135,4 +135,11 @@ public class GameStage extends BasicStage {
     public void setOnCheckLuaFunc(LuaFunction onCheckLuaFunc) {
         this.onCheckLuaFunc = onCheckLuaFunc;
     }
+
+    @Override
+    public void reset() {
+        super.reset();
+        freeze = false;
+        endGame = false;
+    }
 }

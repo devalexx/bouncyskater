@@ -177,7 +177,7 @@ public class EditorUI extends Table {
         clearButton.addListener(new ClickListener(0) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                editorManager.clear();
+                stage.reset();
             }
         });
         paneTable.add(clearButton);

@@ -29,7 +29,6 @@ public class MenuWindow extends Window {
 
         row();
 
-        TextButton prevTextButton;
         prevTextButton = new TextButton("Prev", skin);
         add(prevTextButton);
         closeTextButton = new TextButton("Close", skin);
